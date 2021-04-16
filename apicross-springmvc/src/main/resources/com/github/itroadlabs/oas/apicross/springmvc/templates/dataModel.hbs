@@ -1,0 +1,109 @@
+package {{package}};
+
+import com.fasterxml.jackson.annotation.*;
+import javax.validation.constraints.*;
+import javax.validation.Valid;
+
+import javax.annotation.*;
+import java.util.*;
+import java.util.function.*;
+
+{{#if containingOptionalProperties}}
+    import org.openapitools.jackson.nullable.JsonNullable;
+{{/if}}
+
+{{#if generatorOpts.enableApicrossJavaBeanValidationSupport}}
+    import com.github.itroadlabs.oas.apicross.beanvalidation.*;
+{{/if}}
+
+{{#if customAttributes.apiModelReadInterfacesPackage}}
+    import {{{customAttributes.apiModelReadInterfacesPackage}}}.*;
+{{/if}}
+
+{{> documentation }}
+{{#if generatorOpts.enableApicrossJavaBeanValidationSupport}}
+    {{#if minProperties}}
+        @MinProperties(value = {{minProperties}}, groups = {BeanPropertiesValidationGroup.class})
+    {{/if}}
+    {{#if maxProperties}}
+        @MaxProperties(value = {{maxProperties}}, groups = {BeanPropertiesValidationGroup.class})
+    {{/if}}
+    {{#if requiredProperties}}
+        @RequiredProperties(value = {
+        {{#each requiredProperties}}
+            "{{this}}"
+            {{#unless @last}},{{/unless}}
+        {{/each}}
+        }, groups = {BeanPropertiesValidationGroup.class})
+    {{/if}}
+{{/if}}
+{{#if inheritanceChildModels}}
+    @JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "{{inheritanceDiscriminatorPropertyName}}")
+    @JsonSubTypes({
+    {{#each inheritanceChildModels}}
+        {{#unless @first}},{{/unless}}
+        @JsonSubTypes.Type(value = {{typeName}}.class, name = "{{inheritanceDiscriminatorValue}}")
+    {{/each}}
+    })
+{{/if}}
+@javax.annotation.Generated(value = "{{generatorOpts.generatorClassName}}", date = "{{generatorOpts.generationDate}}")
+public {{#if inheritanceChildModels}}abstract{{/if}} class {{typeName}}
+{{#if inheritanceParentTypeName}} extends {{{inheritanceParentTypeName}}}{{/if}}
+{{#if generatorOpts.enableApicrossJavaBeanValidationSupport}}implements HasSpecifiedProperties{{/if}}
+{{#with customAttributes.implementsInterfaces}}
+    {{#if generatorOpts.enableApicrossJavaBeanValidationSupport}},{{else}} implements {{/if}}
+    {{{join this ','}}}
+{{/with}}
+{
+
+{{#unless inheritanceChild}}
+    protected final java.util.Set< String > $specifiedProperties = new java.util.HashSet<>();
+{{/unless}}
+{{#with additionalPropertiesDataModel}}
+    private final java.util.Map< String, {{> type}} > $additionalProperties = new java.util.HashMap<>();
+{{/with}}
+
+{{#each properties}}
+    {{> dataModelPropertyDeclaration}}
+{{/each}}
+
+public {{typeName}}() {}
+
+{{#each properties}}
+    {{> dataModelPropertyGetterAndSetter}}
+{{/each}}
+
+{{#unless inheritanceChild}}
+    {{#if generatorOpts.enableApicrossJavaBeanValidationSupport}}
+        @Override
+    {{/if}}
+    @JsonIgnore
+    public java.util.Set< String > $specifiedProperties() {
+    return java.util.Collections.unmodifiableSet(this.$specifiedProperties);
+    }
+{{/unless}}
+{{#with additionalPropertiesDataModel}}
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, {{> type}} value) {
+    this.$additionalProperties.put(name, value);
+    }
+
+    @JsonAnyGetter
+    public java.util.Map< String, {{> type}} > getAdditionalProperties() {
+    return this.$additionalProperties;
+    }
+{{/with}}
+
+{{#if properties}}
+    public static final class JsonFieldNames {
+    {{#each properties}}
+        public static final String {{resolvedName}} = "{{name}}";
+    {{/each}}
+
+    private JsonFieldNames() {}
+    }
+{{/if}}
+}

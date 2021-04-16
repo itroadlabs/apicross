@@ -1,0 +1,41 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Test
+paths: {}
+components:
+  schemas:
+    AllOfSchemaType:
+      allOf:
+        - $ref: '#/components/schemas/AllOfSchemaTypePart1'
+        - $ref: '#/components/schemas/AllOfSchemaTypePart2'
+        - type: object
+          description: Test1
+
+    AllOfSchemaTypePart1:
+      type: object
+      properties:
+        a:
+          type: string
+        b:
+          type: string
+
+    AllOfSchemaTypePart2:
+      type: object
+      properties:
+        c:
+          type: array
+          items:
+            type: string
+
+    Zip:
+      type: string
+      description: ZIP
+
+    TestSchema:
+      type: object
+      properties:
+        p1:
+          $ref: '#/components/schemas/AllOfSchemaType'
+        p2:
+          $ref: '#/components/schemas/Zip'

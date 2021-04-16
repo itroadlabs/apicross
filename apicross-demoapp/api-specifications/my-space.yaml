@@ -1,0 +1,523 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: API платформы проведения творческих конкурсов IK@RUS
+tags:
+  - name: Competitions
+    description: Управление конкурсами
+  - name: Works
+    description: Размещение конкурсных работ
+  - name: Notifications
+    description: Оповещения участникам конкурсов
+paths:
+  '/my/competitions':
+    post:
+      summary: Регистрация конкурса
+      tags:
+        - Competitions
+      operationId: registerNewCompetition
+      requestBody:
+        required: true
+        content:
+          'application/vnd.demoapp.v1+json':
+            schema:
+              $ref: '#/components/schemas/CmRegisterCompetitionRequest'
+      responses:
+        '201':
+          description: Запрос на регистрацию конкурса принят
+      security:
+        - Basic: [ ]
+    get:
+      summary: Получение списка управляемых конкурсов
+      tags:
+        - Competitions
+      operationId: listCompetitions
+      responses:
+        '200':
+          description: Список конкурсов в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/CmListCompetitionsResponse'
+      security:
+        - Basic: [ ]
+
+  '/my/competitions/{competitionId}':
+    parameters:
+      - $ref: 'common-models.yaml#/components/parameters/CompetitionIdPathParameter'
+    get:
+      summary: Получение описания конкурса
+      tags:
+        - Competitions
+      operationId: getCompetitionDescription
+      responses:
+        '200':
+          description: Описание конкурса в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/CmGetCompetitionResponse'
+      security:
+        - Basic: [ ]
+    patch:
+      summary: Изменение условий конкурса
+      tags:
+        - Competitions
+      operationId: updateCompetition
+      requestBody:
+        required: true
+        content:
+          'application/vnd.demoapp.v1+json':
+            schema:
+              $ref: '#/components/schemas/CmUpdateCompetitionRequest'
+      responses:
+        '204':
+          description: Условия конкурса изменены
+      security:
+        - Basic: [ ]
+    delete:
+      summary: Удалить конкурс
+      tags:
+        - Competitions
+      operationId: deleteCompetition
+      responses:
+        '204':
+          description: Конкурс удалён
+      security:
+        - Basic: [ ]
+
+  '/my/competitions/{competitionId}/open':
+    put:
+      summary: Открытие конкурса
+      description: >
+        После открытия конкурса он становится доступен для дрйгих пользователей площадки
+        и для размещения конкурсных работ
+      operationId: openCompetition
+      tags:
+        - Competitions
+      parameters:
+        - $ref: 'common-models.yaml#/components/parameters/CompetitionIdPathParameter'
+      requestBody:
+        required: true
+        content:
+          'application/vnd.demoapp.v1+json':
+            schema:
+              $ref: '#/components/schemas/CmOpenCompetitionRequest'
+      responses:
+        '202':
+          description: Запрос на открытие конкурса принят
+        '409':
+          description: Запрос на открытие конкурса в процессе рассмотрения
+      security:
+        - Basic: [ ]
+
+  '/my/competitions/{competitionId}/start-voting':
+    put:
+      summary: Открыть голосование
+      operationId: startCompetitionVoting
+      tags:
+        - Competitions
+      parameters:
+        - $ref: 'common-models.yaml#/components/parameters/CompetitionIdPathParameter'
+      responses:
+        '204':
+          description: Голосование открыто
+        '409':
+          description: Голосование уже открыто
+      security:
+        - Basic: [ ]
+
+  '/my/competitions/{competitionId}/close':
+    put:
+      summary: Завершение конкурса
+      operationId: closeCompetition
+      tags:
+        - Competitions
+      parameters:
+        - $ref: 'common-models.yaml#/components/parameters/CompetitionIdPathParameter'
+      responses:
+        '204':
+          description: Конкурс завершен
+        '409':
+          description: Конкурс уже закрыт
+      security:
+        - Basic: [ ]
+
+  '/my/competitions/{competitionId}/works':
+    parameters:
+      - $ref: 'common-models.yaml#/components/parameters/CompetitionIdPathParameter'
+    post:
+      summary: Опубликовать конкурсную работу
+      operationId: placeWork
+      tags:
+        - Works
+      requestBody:
+        $ref: '#/components/requestBodies/WpPlaceWorkRequestBody'
+      responses:
+        '201':
+          description: Работа размещена
+      security:
+        - Basic: [ ]
+
+  '/my/works':
+    get:
+      summary: Список конкурсных работ
+      operationId: listWorks
+      tags:
+        - Works
+      responses:
+        '200':
+          description: Список конкурсных работ в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/WpListWorksResponse'
+      security:
+        - Basic: [ ]
+
+  '/my/works/{workId}':
+    parameters:
+      - $ref: 'common-models.yaml#/components/parameters/WorkIdPathParameter'
+    get:
+      summary: Получение описания работы
+      operationId: getWorkDescription
+      tags:
+        - Works
+      responses:
+        '200':
+          description: Описание работы в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/WpGetWorkResponse'
+      security:
+        - Basic: [ ]
+    delete:
+      summary: Удаление конкурсной работы
+      operationId: deleteWork
+      tags:
+        - Works
+      responses:
+        '204':
+          description: Конкурсная работа удалена
+      security:
+        - Basic: [ ]
+
+  '/my/works/{workId}/files':
+    parameters:
+      - $ref: 'common-models.yaml#/components/parameters/WorkIdPathParameter'
+    post:
+      summary: Добавление файла к конкурсной работе
+      operationId: addWorkFile
+      tags:
+        - Works
+      requestBody:
+        required: true
+        content:
+          'image/jpeg':
+            schema:
+              $ref: 'common-models.yaml#/components/schemas/BinaryContent'
+          'audio/mp4':
+            schema:
+              $ref: 'common-models.yaml#/components/schemas/BinaryContent'
+          'video/mp4':
+            schema:
+              $ref: 'common-models.yaml#/components/schemas/BinaryContent'
+      responses:
+        '201':
+          description: Файл добавлен к конкурсной работе
+        '409':
+          description: Файл не может быть добавлен в уже опубликованную работу
+      security:
+        - Basic: [ ]
+
+  '/my/work-files/{fileId}':
+    parameters:
+      - $ref: 'common-models.yaml#/components/parameters/MediaFileIdPathParameter'
+    get:
+      summary: Скачивание файла конкурсной работы
+      operationId: downloadWorkFile
+      tags:
+        - Works
+      responses:
+        '200':
+          description: Контент файла в теле ответа
+          content:
+            'image/jpeg':
+              schema:
+                $ref: 'common-models.yaml#/components/schemas/BinaryContent'
+            'audio/mp4':
+              schema:
+                $ref: 'common-models.yaml#/components/schemas/BinaryContent'
+            'video/mp4':
+              schema:
+                $ref: 'common-models.yaml#/components/schemas/BinaryContent'
+      security:
+        - Basic: [ ]
+
+    delete:
+      summary: Уделение файла конкурсной работы
+      operationId: deleteWorkFile
+      tags:
+        - Works
+      responses:
+        '204':
+          description: Файл удалён
+      security:
+        - Basic: [ ]
+
+  '/my/notifications':
+    get:
+      summary: Получить список оповещений
+      operationId: listNotifications
+      tags:
+        - Notifications
+      parameters:
+        - $ref: 'common-models.yaml#/components/parameters/PageSizeParameter'
+        - $ref: 'common-models.yaml#/components/parameters/PageNumberParameter'
+      responses:
+        '200':
+          description: Список оповещений в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/NfListNotificationsResponse'
+      security:
+        - Basic: [ ]
+
+  '/my/read-notifications':
+    post:
+      summary: Отметить оповещения как прочтённые
+      operationId: addNotificationsToReadCollection
+      tags:
+        - Notifications
+      requestBody:
+        required: true
+        content:
+          'application/vnd.demoapp.v1+json':
+            schema:
+              $ref: '#/components/schemas/NfAddNotificationsToReadCollectionRequest'
+      responses:
+        '204':
+          description: Оповещения помечены как прочтённые
+      security:
+        - Basic: [ ]
+
+components:
+  securitySchemes:
+    Basic:
+      type: http
+      scheme: basic
+
+  schemas:
+    CmRegisterCompetitionRequest:
+      type: object
+      properties:
+        title:
+          $ref: 'common-models.yaml#/components/schemas/CompetitionTitle'
+        description:
+          $ref: 'common-models.yaml#/components/schemas/CompetitionDescription'
+        participantReqs:
+          $ref: 'common-models.yaml#/components/schemas/ParticipantRequirements'
+        votingType:
+          $ref: 'common-models.yaml#/components/schemas/VotingType'
+      required:
+        - title
+        - description
+        - participantReqs
+        - votingType
+
+    CmUpdateCompetitionRequest:
+      type: object
+      properties:
+        title:
+          $ref: 'common-models.yaml#/components/schemas/CompetitionTitle'
+        description:
+          $ref: 'common-models.yaml#/components/schemas/CompetitionDescription'
+        participantReqs:
+          $ref: 'common-models.yaml#/components/schemas/ParticipantRequirements'
+        votingType:
+          $ref: 'common-models.yaml#/components/schemas/VotingType'
+      minProperties: 1
+
+    CmListCompetitionsResponse:
+      type: object
+      properties:
+        page:
+          $ref: 'common-models.yaml#/components/schemas/Page'
+        pageContent:
+          type: array
+          items:
+            $ref: '#/components/schemas/CmCompetitionShortDescription'
+      required:
+        - page
+        - pageContent
+
+    CmGetCompetitionResponse:
+      type: object
+      properties:
+        id:
+          $ref: 'common-models.yaml#/components/schemas/ObjectId'
+        title:
+          $ref: 'common-models.yaml#/components/schemas/CompetitionTitle'
+        description:
+          $ref: 'common-models.yaml#/components/schemas/CompetitionDescription'
+        participantReqs:
+          $ref: 'common-models.yaml#/components/schemas/ParticipantRequirements'
+        votingType:
+          $ref: 'common-models.yaml#/components/schemas/VotingType'
+        status:
+          $ref: 'common-models.yaml#/components/schemas/CompetitionStatus'
+      required:
+        - id
+        - title
+        - description
+        - participantReqs
+        - votingType
+        - status
+
+    CmCompetitionShortDescription:
+      type: object
+      properties:
+        title:
+          $ref: 'common-models.yaml#/components/schemas/CompetitionTitle'
+        status:
+          $ref: 'common-models.yaml#/components/schemas/CompetitionStatus'
+      required:
+        - title
+        - status
+
+    CmOpenCompetitionRequest:
+      type: object
+      properties:
+        acceptWorksTillDate:
+          type: string
+          format: date
+        acceptVotesTillDate:
+          type: string
+          format: date
+      required:
+        - acceptWorksTillDate
+        - acceptVotesTillDate
+
+    WpPlaceWorkRequest:
+      type: object
+      properties:
+        title:
+          $ref: 'common-models.yaml#/components/schemas/WorkTitle'
+        description:
+          $ref: 'common-models.yaml#/components/schemas/WorkDescription'
+        author:
+          $ref: 'common-models.yaml#/components/schemas/WorkAuthor'
+        author_age:
+          type: integer
+          format: 'int32'
+          maximum: 18
+          minimum: 2
+      required:
+        - title
+        - description
+        - author
+        - author_age
+
+    WpListWorksResponse:
+      type: object
+      properties:
+        works:
+          type: array
+          items:
+            $ref: 'common-models.yaml#/components/schemas/WorkSummary'
+      required:
+        - works
+
+    WpGetWorkResponse:
+      type: object
+      properties:
+        title:
+          $ref: 'common-models.yaml#/components/schemas/WorkTitle'
+        description:
+          $ref: 'common-models.yaml#/components/schemas/WorkDescription'
+        author:
+          $ref: 'common-models.yaml#/components/schemas/WorkAuthor'
+        datePlaced:
+          type: string
+          format: date
+        status:
+          $ref: 'common-models.yaml#/components/schemas/WorkStatus'
+      required:
+        - title
+        - description
+        - author
+        - datePlaced
+        - status
+
+    NfListNotificationsResponse:
+      type: object
+      properties:
+        page:
+          $ref: 'common-models.yaml#/components/schemas/Page'
+        pageContent:
+          type: array
+          items:
+            $ref: '#/components/schemas/NfNotification'
+      required:
+        - page
+        - pageContent
+
+    NfAddNotificationsToReadCollectionRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            $ref: 'common-models.yaml#/components/schemas/ObjectId'
+      required:
+        - ids
+
+    NfNotification:
+      type: object
+      properties:
+        id:
+          $ref: 'common-models.yaml#/components/schemas/ObjectId'
+        text:
+          type: string
+          maxLength: 2000
+        timestamp:
+          type: string
+          format: 'date-time'
+      required:
+        - id
+        - text
+        - timestamp
+
+#    WpMultipartPlaceWorkRequest:
+#      allOf:
+#        - $ref: '#/components/schemas/WpPlaceWorkRequest'
+#        - type: object
+#          properties:
+#            file1:
+#              $ref: 'common-models.yaml#/components/schemas/BinaryContent'
+#            file2:
+#              $ref: 'common-models.yaml#/components/schemas/BinaryContent'
+#            file3:
+#              $ref: 'common-models.yaml#/components/schemas/BinaryContent'
+
+  requestBodies:
+    WpPlaceWorkRequestBody:
+      required: true
+      content:
+#        'multipart/form-data':
+#          schema:
+#            $ref: '#/components/schemas/WpMultipartPlaceWorkRequest'
+#          encoding:
+#            work:
+#              contentType: application/json
+#            file1:
+#              contentType: image/jpeg, audio/mp4, video/mp4
+#            file2:
+#              contentType: image/jpeg, audio/mp4, video/mp4
+#            file3:
+#              contentType: image/jpeg, audio/mp4, video/mp4
+        'application/vnd.demoapp.v1+json':
+          schema:
+            $ref: '#/components/schemas/WpPlaceWorkRequest'

@@ -1,0 +1,6 @@
+@RequestMapping(
+method = RequestMethod.{{httpMethod}},
+path = "{{uriPath}}"
+{{#if consumesMediaType}}, consumes = "{{consumesMediaType}}"{{/if}}
+{{#if producesMediaType}}, produces = "{{producesMediaType}}"{{/if}}
+)

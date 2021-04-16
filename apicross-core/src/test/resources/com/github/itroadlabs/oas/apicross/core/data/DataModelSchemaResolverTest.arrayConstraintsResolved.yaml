@@ -1,0 +1,50 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Test
+paths: {}
+components:
+  schemas:
+    SimpleObject:
+      type: object
+      required:
+        - b
+      properties:
+        a:
+          type: integer
+        b:
+          type: string
+        c:
+          type: string
+          format: date
+
+    ArrayWithRefOntoObjectType:
+      type: array
+      items:
+        $ref: '#/components/schemas/SimpleObject'
+      minItems:  1
+      maxItems: 10
+      uniqueItems: true
+
+    ArrayWithRefOntoSimpleType:
+      type: array
+      items:
+        type: string
+        nullable: true
+        maxLength: 100
+      minItems:  1
+      maxItems: 10
+      uniqueItems: true
+
+    ArrayWithRefOntoSimpleTypeV2:
+      type: array
+      items:
+        $ref: '#/components/schemas/StringType'
+      minItems:  1
+      maxItems: 10
+      uniqueItems: true
+
+    StringType:
+      type: string
+      nullable: true
+      maxLength: 100

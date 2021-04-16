@@ -1,0 +1,9 @@
+@RequestMapping(
+method = RequestMethod.{{httpMethod}},
+path = "{{uriPath}}",
+headers = {
+{{#if consumesMediaType}}"Content-Type={{consumesMediaType}}"{{/if}}
+{{#if (and consumesMediaType producesMediaType)}},{{/if}}
+{{#if producesMediaType}}"Accept={{producesMediaType}}"{{/if}}
+}
+)

@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: storefront
+server:
+  port: 7010

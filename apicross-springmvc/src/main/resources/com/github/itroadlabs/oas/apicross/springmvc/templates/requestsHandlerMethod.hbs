@@ -1,0 +1,26 @@
+
+{{> documentation }}
+{{> requestsHandlerMethodHttpMapping}}
+ResponseEntity<{{> requestsHandlerMethodResponseBodyType}}> {{methodName}}(
+{{> requestsHandlerMethodPathVars}}
+{{#if pathParameters}},{{/if}}
+{{#if generatorOpts.useQueryStringParametersObject}}
+    {{#if queryParameters}}
+        {{capitalizeFirst operationId}}Query queryParameters,
+    {{/if}}
+{{else}}
+    {{> requestsHandlerMethodQueryStringParameters}}
+{{/if}}
+@RequestHeader HttpHeaders headers
+{{#if customAttributes.addAuthPrincipalArg}}
+    , @CurrentSecurityContext(expression = "authentication") Authentication authentication
+{{/if}}
+{{#if requestBody}}
+    ,
+    {{#if requestBody.customAttributes.avoidRequestBodyAnnotation}}
+        {{> requestsHandlerMethodRequestBodyType}} requestEntity
+    {{else}}
+        @RequestBody(required = {{requestBodyRequired}}) {{> requestsHandlerMethodRequestBodyType}} requestBody
+    {{/if}}
+{{/if}}
+) throws Exception;

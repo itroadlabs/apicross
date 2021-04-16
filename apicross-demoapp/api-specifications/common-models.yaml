@@ -1,0 +1,317 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Модели повторного использования
+paths: {}
+components:
+  schemas:
+    Link:
+      description: Link object
+      type: object
+      properties:
+        rel:
+          description: Relation name for the link
+          type: string
+        href:
+          description: URI for the linked resource
+          type: string
+        title:
+          description: Optional human-readable title for the link
+          type: string
+      required:
+        - rel
+        - href
+
+    Rfc5988LinkHeader:
+      type: string
+      minLength: 1
+      example:
+        '<https://example.com>; rel="preconnect"'
+    Page:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+          minimum: 0
+          example:
+            10
+        number:
+          type: integer
+          format: int32
+          minimum: 0
+          example:
+            1
+        pageSize:
+          type: integer
+          format: int32
+          minimum: 1
+          example:
+            10
+        total:
+          type: integer
+          format: int32
+          minimum: 0
+          example:
+            97
+      required:
+        - totalPages
+        - number
+        - pageSize
+        - total
+
+    CompetitionId:
+      type: string
+      maxLength: 36
+      description: Идентификатор конкурса
+
+    CompetitionTitle:
+      type: string
+      description: Назвнаие конкурса
+      maxLength: 100
+      minLength: 5
+      example:
+        'Конкурс рисунка "Золотая осень"'
+
+    CompetitionDescription:
+      type: string
+      description: Описание конкурса
+      maxLength: 2000
+      minLength: 100
+      nullable: true
+
+    CompetitionStatus:
+      type: string
+      description: Статус конкурса
+      enum:
+        - Pending
+        - Open
+        - Voting
+        - Closed
+        - Rejected
+
+    ParticipantRequirements:
+      type: object
+      description: Требования к участнику конкурса
+      properties:
+        minAge:
+          type: integer
+          format: int32
+          minimum: 3
+          maximum: 99
+        maxAge:
+          type: integer
+          format: int32
+          minimum: 3
+          maximum: 99
+      minProperties: 1
+
+    WorkAuthor:
+      type: string
+      description: Автор конкурсной работы
+      maxLength: 150
+      minLength: 5
+
+    WorkDescription:
+      type: string
+      description: Описание конкурсной работы
+      maxLength: 2000
+      minLength: 50
+      nullable: true
+
+    WorkTitle:
+      type: string
+      description: Название конкурсное работы
+      maxLength: 100
+      minLength: 10
+
+    WorkStatus:
+      type: string
+      description: Статус конкурсной работы
+      enum:
+        - Draft
+        - Published
+        - Rejected
+
+    WorkTitledRef:
+      type: object
+      description: Ссылка на конкурсную работу
+      properties:
+        title:
+          $ref: '#/components/schemas/WorkTitle'
+        href:
+          type: string
+
+    WorkSummary:
+      type: object
+      description: Краткое описание работы
+      properties:
+        title:
+          $ref: '#/components/schemas/WorkTitle'
+        author:
+          $ref: '#/components/schemas/WorkAuthor'
+        placementDate:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/WorkStatus'
+      required:
+        - title
+        - author
+        - datePlaced
+        - status
+
+    WorkVotesSummary:
+      type: object
+      description: Сводка по голосованию за конкурсную работу
+      properties:
+        totalVotes:
+          type: integer
+          format: int32
+        stats:
+          $ref: '#/components/schemas/WorkVotesStats'
+
+    WorkVotesStats:
+      description: Статистика голосов конкурсной работы
+      oneOf:
+        - $ref: '#/components/schemas/WorkLikesStats'
+        - $ref: '#/components/schemas/WorkPointsStats'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          likes: '#/components/schemas/WorkLikesStats'
+          points: '#/components/schemas/WorkPointsStats'
+
+    WorkLikesStats:
+      description: Статистика "лайков" конкурсной работы
+      type: object
+      properties:
+        '@type':
+          type: string
+        likes:
+          type: integer
+          format: int32
+        dislikes:
+          type: integer
+          format: int32
+      required:
+        - '@type'
+        - likes
+        - dislikes
+
+    WorkPointsStats:
+      description: Статистика баллов конкурсной работы
+      type: object
+      properties:
+        '@type':
+          type: string
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkPointsStatsItem'
+      required:
+        - '@type'
+        - points
+
+    WorkPointsStatsItem:
+      type: object
+      properties:
+        points:
+          type: integer
+          format: int32
+        votes:
+          type: integer
+          format: int32
+      required:
+        - points
+        - votes
+
+    VotingType:
+      type: string
+      description: Тип голосования
+      enum:
+        - ClapsVoting
+        - PointsVoting
+      default: 'ClapsVoting'
+
+    ObjectId:
+      type: string
+      description: Идентификатор объекта
+      maxLength: 20
+      minLength: 3
+      example:
+        's4f4hdsrrf5sddsg'
+
+    BinaryContent:
+      description: Модель данных для Upload-а файлов (бинарный контент тела запроса)
+      type: string
+      format: binary
+
+    Base64EncodedBytes:
+      description: Модель данных для Base64 кодированных байт в виде строк
+      type: string
+      format: byte
+
+    HALLink:
+      type: object
+      properties:
+        href:
+          type: string
+        title:
+          type: string
+      required:
+        - href
+  parameters:
+    CompetitionIdPathParameter:
+      in: path
+      name: competitionId
+      description: Идентификатор конкурса
+      required: true
+      schema:
+        $ref: '#/components/schemas/ObjectId'
+
+    WorkIdPathParameter:
+      in: path
+      name: workId
+      description: Идентификатор работы
+      required: true
+      schema:
+        $ref: '#/components/schemas/ObjectId'
+
+    VoteIdPathParameter:
+      in: path
+      name: workId
+      description: Идентификатор голоса
+      required: true
+      schema:
+        $ref: '#/components/schemas/ObjectId'
+
+    MediaFileIdPathParameter:
+      in: path
+      name: fileId
+      description: Идентификатор файла
+      required: true
+      schema:
+        $ref: '#/components/schemas/ObjectId'
+
+    PageSizeParameter:
+      in: query
+      name: pageSize
+      description: Размер страницы списка
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        default: 20
+
+    PageNumberParameter:
+      in: query
+      name: page
+      description: Номер страницы списка
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0

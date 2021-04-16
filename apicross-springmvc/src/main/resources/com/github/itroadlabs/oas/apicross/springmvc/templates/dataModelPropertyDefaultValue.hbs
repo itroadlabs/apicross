@@ -1,0 +1,9 @@
+{{#if primitive}}
+    {{#if defaultValueNotNull}}
+        {{#if string}}
+            = "{{{defaultValue}}}"
+        {{else}}
+            = {{{defaultValue}}}
+        {{/if}}
+    {{/if}}
+{{/if}}

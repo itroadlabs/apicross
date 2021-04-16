@@ -1,0 +1,75 @@
+package {{package}};
+{{#each imports}}
+    import {{this}};
+{{/each}}
+import javax.validation.constraints.*;
+import javax.validation.Valid;
+import java.util.*;
+import javax.annotation.*;
+{{#if anyOptionalQueryParameter}}
+    import java.util.Optional;
+{{/if}}
+
+{{#if generatorOpts.enableApicrossJavaBeanValidationSupport}}
+    import com.github.itroadlabs.oas.apicross.beanvalidation.*;
+{{/if}}
+
+{{#if generatorOpts.enableApicrossJavaBeanValidationSupport}}
+    {{#if queryObjectRequiredProperties}}
+        @RequiredProperties(value = {
+        {{#each requiredProperties}}
+            "{{this}}"
+            {{#unless @last}},{{/unless}}
+        {{/each}}
+        }, groups = {BeanPropertiesValidationGroup.class})
+    {{/if}}
+{{/if}}
+@javax.annotation.Generated(value = "{{generatorOpts.generatorClassName}}", date = "{{generatorOpts.generationDate}}")
+public class {{capitalizeFirst operationId}}Query
+{{#if generatorOpts.enableApicrossJavaBeanValidationSupport}}implements HasSpecifiedProperties{{/if}}
+{{#if queryObjectTypeInterfaces}}
+    {{#if generatorOpts.enableApicrossJavaBeanValidationSupport}},{{else}} implements {{/if}}
+    {{#each queryObjectTypeInterfaces}}
+        {{this}}
+        {{#unless @last}},{{/unless}}
+    {{/each}}
+{{/if}}
+{
+private final Set< String > $specifiedProperties = new HashSet();
+{{#each queryParameters}}
+    {{#with type}}
+        {{> dataModelPropertyConstraints}}
+        private {{> type}} {{../resolvedName}} {{> dataModelPropertyDefaultValue}};
+    {{/with}}
+{{/each}}
+{{#each queryParameters}}
+    {{#if optionalWithoutDefaultValue}}
+        {{#if deprecated}}@Deprecated{{/if}}
+        public Optional<{{#with type}}{{> type}}{{/with}}> get{{capitalizeFirst resolvedName}}() {
+        return $specifiedProperties.contains("{{name}}") ? Optional.of(this.{{resolvedName}}) : Optional.empty();
+        }
+    {{else}}
+        {{#if deprecated}}@Deprecated{{/if}}
+        public {{#with type}}{{> type}}{{/with}} get{{capitalizeFirst resolvedName}}() {
+        return this.{{resolvedName}};
+        }
+    {{/if}}
+    {{#if deprecated}}@Deprecated{{/if}}
+    public void set{{capitalizeFirst resolvedName}}({{#with type}}{{> type}}{{/with}} value) {
+    this.$specifiedProperties.add("{{name}}");
+    this.{{resolvedName}} = value;
+    }
+
+    {{#if deprecated}}@Deprecated{{/if}}
+    public {{capitalizeFirst operationId}}Query {{name}}({{#with type}}{{> type}}{{/with}} value) {
+    this.$specifiedProperties.add("{{name}}");
+    this.{{resolvedName}} = value;
+    return this;
+    }
+{{/each}}
+{{#if generatorOpts.enableApicrossJavaBeanValidationSupport}}
+    @Override public Set< String > $specifiedProperties() {
+    return Collections.unmodifiableSet(this.$specifiedProperties);
+    }
+{{/if}}
+}

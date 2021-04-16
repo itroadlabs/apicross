@@ -1,0 +1,23 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Test
+paths: {}
+components:
+  schemas:
+    SimpleObject:
+      type: object
+      required:
+        - b
+      properties:
+        a:
+          type: integer
+        b:
+          type: string
+        c:
+          type: string
+          format: date
+
+
+
+

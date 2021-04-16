@@ -1,0 +1,101 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Test
+paths:
+  /resource1:
+    get:
+      operationId: getResource
+      responses:
+        '200':
+          description: Success
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ListResourcesResponse'
+            'application/pdf':
+              schema:
+                $ref: '#/components/schemas/BinaryContent'
+            'application/msword':
+              schema:
+                $ref: '#/components/schemas/BinaryContent'
+  /resource2:
+    post:
+      operationId: postResource
+      requestBody:
+        description: body
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/ListResourcesResponse'
+          'application/pdf':
+            schema:
+              $ref: '#/components/schemas/BinaryContent'
+          'application/msword':
+            schema:
+              $ref: '#/components/schemas/BinaryContent'
+      responses:
+        '200':
+          description: Success
+
+  /resource3:
+    put:
+      operationId: putResource
+      requestBody:
+        description: body
+        content:
+          'application/vnd.mayapp.v1+json':
+            schema:
+              type: string
+          'application/vnd.mayapp.v2+json':
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            'application/pdf':
+              schema:
+                $ref: '#/components/schemas/BinaryContent'
+            'application/msword':
+              schema:
+                $ref: '#/components/schemas/BinaryContent'
+
+  /resource4:
+    post:
+      operationId: postResource3
+      requestBody:
+        $ref: '#/components/requestBodies/RequestBody4'
+      responses:
+        '200':
+          $ref: '#/components/responses/ResponseBody4'
+
+
+components:
+  schemas:
+    ListResourcesResponse:
+      type: object
+
+    BinaryContent:
+      type: string
+      format: binary
+  requestBodies:
+    RequestBody4:
+      description: Request
+      content:
+        'application/vnd.mayapp.v1+json':
+          schema:
+            $ref: '#/components/schemas/ListResourcesResponse'
+        'image/jpeg':
+          schema:
+            $ref: '#/components/schemas/BinaryContent'
+  responses:
+    ResponseBody4:
+      description: Success
+      content:
+        'application/vnd.mayapp.v1+json':
+          schema:
+            $ref: '#/components/schemas/ListResourcesResponse'
+        'image/jpeg':
+          schema:
+            $ref: '#/components/schemas/BinaryContent'

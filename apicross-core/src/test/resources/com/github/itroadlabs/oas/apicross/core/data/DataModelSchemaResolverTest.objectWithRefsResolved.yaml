@@ -1,0 +1,34 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Test
+paths: {}
+components:
+  schemas:
+    StringType:
+      type: string
+
+    SimpleObject:
+      type: object
+      required:
+        - b
+      properties:
+        a:
+          type: integer
+        b:
+          type: string
+        c:
+          type: string
+          format: date
+
+    ObjectWithRefs:
+      type: object
+      properties:
+        s:
+          $ref: '#/components/schemas/StringType'
+        o:
+          $ref: '#/components/schemas/SimpleObject'
+      required:
+        - o
+
+

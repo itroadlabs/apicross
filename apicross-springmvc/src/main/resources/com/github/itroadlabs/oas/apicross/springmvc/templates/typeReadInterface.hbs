@@ -1,0 +1,14 @@
+{{!-- DataModel --}}
+{{#if array}}
+    List<? extends {{#with itemsDataModel}} {{> typeReadInterface}} {{/with}} >
+{{else if primitive}}
+    {{> primitiveType}}
+{{else if object}}
+    {{#if customAttributes.externalType}}
+        {{typeName}}
+    {{else}}
+        IRead{{{originalTypeName}}}
+    {{/if}}
+{{else}}
+    Object
+{{/if}}

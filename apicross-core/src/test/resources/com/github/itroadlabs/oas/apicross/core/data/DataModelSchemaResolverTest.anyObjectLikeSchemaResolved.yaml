@@ -1,0 +1,21 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Test
+paths: { }
+components:
+  schemas:
+    ObjectType1:
+      type: object
+
+    ObjectType2:
+      type: object
+      properties:
+        prop1:
+          type: object
+          description: Anytype
+
+    ArrayType1:
+      type: array
+      items:
+        type: object

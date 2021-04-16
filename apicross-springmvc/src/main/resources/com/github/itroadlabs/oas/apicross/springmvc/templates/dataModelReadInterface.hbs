@@ -1,0 +1,43 @@
+package {{package}};
+
+import com.fasterxml.jackson.annotation.*;
+import javax.validation.constraints.*;
+import javax.validation.Valid;
+
+import java.util.*;
+import javax.annotation.*;
+
+@javax.annotation.Generated(value = "{{generatorOpts.generatorClassName}}", date = "{{generatorOpts.generationDate}}")
+public interface IRead{{originalTypeName}} {{#if inheritanceParentOriginalTypeName}} extends IRead{{{inheritanceParentOriginalTypeName}}}{{/if}} {
+{{#each properties}}
+    {{#if (and optional generatorOpts.useJsonNullable)}}
+        {{> documentation }}
+        {{#if nullable}}@Nullable{{/if}}
+        {{#if deprecated}}@Deprecated{{/if}}
+        {{#with type}}{{> typeReadInterface}}{{/with}} get{{capitalizeFirst resolvedName}}() throws NoSuchElementException;
+
+        {{#if type.primitive}}
+        {{> documentation }}
+        {{#if nullable}}@Nullable{{/if}}
+        {{#if deprecated}}@Deprecated{{/if}}
+        {{#with type}}{{> type}}{{/with}} get{{capitalizeFirst resolvedName}}OrElse({{#with type}}{{> type}}{{/with}} defaultValue);
+        {{/if}}
+
+        {{#if deprecated}}@Deprecated{{/if}}
+        boolean is{{capitalizeFirst resolvedName}}Present();
+
+        {{#if nullable}}
+        {{#if deprecated}}@Deprecated{{/if}}
+        boolean is{{capitalizeFirst resolvedName}}PresentAndNotNull();
+        {{/if}}
+    {{else}}
+        {{> documentation }}
+        {{#if deprecated}}@Deprecated{{/if}}
+        {{#if nullable}}@Nullable{{/if}}
+        {{#with type}}{{> typeReadInterface}}{{/with}} get{{capitalizeFirst resolvedName}}();
+    {{/if}}
+{{/each}}
+{{#with additionalPropertiesDataModel}}
+    java.util.Map< String, ? extends {{> typeReadInterface}} > getAdditionalProperties();
+{{/with}}
+}

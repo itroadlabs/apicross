@@ -1,0 +1,73 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Test
+paths: {}
+components:
+  schemas:
+    AllOfSchemaType:
+      allOf:
+        - $ref: '#/components/schemas/AllOfSchemaTypePart1'
+        - $ref: '#/components/schemas/AllOfSchemaTypePart2'
+        - type: object
+          properties:
+            d:
+              $ref: '#/components/schemas/AllOfSchemaTypePart1'
+
+    AllOfSchemaTypePart1:
+      type: object
+      properties:
+        a:
+          type: string
+        b:
+          type: string
+
+    AllOfSchemaTypePart2:
+      type: object
+      properties:
+        c:
+          type: array
+          items:
+            type: string
+
+    AllOfSchemaTypeOnlyConstraints:
+      allOf:
+        - $ref: '#/components/schemas/AllOfSchemaTypePart1'
+        - $ref: '#/components/schemas/AllOfSchemaTypePart2'
+        - type: object
+          required:
+            - a
+            - c
+          description: Test
+
+
+    AllOfInField1:
+      type: object
+      properties:
+        c:
+          allOf:
+            - $ref: '#/components/schemas/AllOfSchemaTypePart1'
+            - example:
+                a: '1'
+                b: '2'
+
+    AllOfInField2:
+      type: object
+      properties:
+        c:
+          allOf:
+            - $ref: '#/components/schemas/AllOfSchemaTypePart1'
+            - description: Test description
+
+    String100Type:
+      type: string
+      maxLength: 100
+
+    AllOfInField3:
+      type: object
+      properties:
+        c:
+          allOf:
+            - $ref: '#/components/schemas/String100Type'
+            - nullable: true
+              minLength: 10

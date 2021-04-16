@@ -1,0 +1,1002 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: EShop Catalog API
+  description: |
+    This API provides ability to manage catalog
+tags:
+  - name: Root
+  - name: CatalogContent
+  - name: ShopCatalog
+  - name: ShoppingCart
+  - name: Orders
+
+paths:
+  '/':
+    get:
+      summary: Get links to the possible resource relations
+      operationId: describeLinks
+      tags:
+        - Root
+      responses:
+        '200':
+          description: Links collection in the response body
+          content:
+            'application/vnd.eshop.links+json':
+              schema:
+                $ref: '#/components/schemas/RootLinks'
+
+  '/catalog-products':
+    post:
+      summary: Add an item to the catalog
+      operationId: addCatalogItem
+      tags:
+        - CatalogContent
+      requestBody:
+        required: true
+        content:
+          'application/vnd.eshop.v1+json':
+            schema:
+              $ref: '#/components/schemas/CatalogProductCreate'
+      responses:
+        '201':
+          description: Item added
+          headers:
+            Location:
+              $ref: '#/components/headers/hdrLocation'
+    get:
+      summary: List catalog items
+      operationId: listCatalogItems
+      tags:
+        - CatalogContent
+      parameters:
+        - $ref: '#/components/parameters/qpPage'
+        - $ref: '#/components/parameters/qpPageSize'
+        - in: query
+          name: category
+          description: Category of products
+          required: false
+          schema:
+            $ref: '#/components/schemas/CategoryRef'
+      responses:
+        '200':
+          description: Catalog items in the response body
+          content:
+            'application/vnd.eshop.v1+json':
+              schema:
+                $ref: '#/components/schemas/CatalogProducts'
+
+  '/catalog-products/{sku}':
+    parameters:
+      - $ref: '#/components/parameters/ppSku'
+    get:
+      summary: Get catalog item description
+      operationId: getCatalogItem
+      tags:
+        - CatalogContent
+      responses:
+        '200':
+          description: Catalog item representation in the response body
+          content:
+            'application/vnd.eshop.v1+json':
+              schema:
+                $ref: '#/components/schemas/CatalogProduct'
+    patch:
+      summary: Update catalog item
+      operationId: updateCatalogItem
+      tags:
+        - CatalogContent
+      requestBody:
+        required: true
+        content:
+          'application/vnd.eshop.v1+json':
+            schema:
+              $ref: '#/components/schemas/CatalogProductPatch'
+      responses:
+        '204':
+          description: Catalog item updated
+
+    delete:
+      summary: Remove item from catalog
+      operationId: removeCatalogItem
+      tags:
+        - CatalogContent
+      responses:
+        '204':
+          description: Catalog item removed
+
+  '/catalog/search':
+    post:
+      summary: Search products in the catalog
+      operationId: searchProducts
+      tags:
+        - ShopCatalog
+      requestBody:
+        required: true
+        content:
+          'application/vnd.eshop.v1+json':
+            schema:
+              $ref: '#/components/schemas/CatalogSearchResultsCreate'
+      responses:
+        '201':
+          description: |
+            `CatalogSearchResults` resource is available via URI from the 'Location' header
+          headers:
+            Location:
+              $ref: '#/components/headers/hdrLocation'
+
+  '/catalog/search/{search_results_key}':
+    get:
+      summary: Get search results
+      operationId: getSearchResults
+      tags:
+        - ShopCatalog
+      parameters:
+        - $ref: '#/components/parameters/ppSearchResultsKey'
+        - $ref: '#/components/parameters/qpPage'
+        - $ref: '#/components/parameters/qpPageSize'
+      responses:
+        '200':
+          description: Search results in the response body
+          content:
+            'application/vnd.eshop.v1+json':
+              schema:
+                $ref: '#/components/schemas/CatalogSearchResults'
+
+  '/catalog/{sku}':
+    get:
+      summary: Get product description
+      operationId: getCatalogProductItem
+      tags:
+        - ShopCatalog
+      parameters:
+        - $ref: '#/components/parameters/ppSku'
+      responses:
+        '200':
+          description: Product description in the response body
+          content:
+            'application/vnd.eshop.v1+json':
+              schema:
+                $ref: '#/components/schemas/CatalogProductItem'
+
+  '/catalog-categories':
+    get:
+      summary: List categories
+      operationId: listCategories
+      tags:
+        - ShopCatalog
+      responses:
+        '200':
+          description: Categories list in the response body
+          content:
+            'application/vnd.eshop.v1+json':
+              schema:
+                $ref: '#/components/schemas/CatalogCategories'
+
+  '/shopping-cart':
+    post:
+      summary: Add product to shopping cart
+      operationId: addProductToShoppingCart
+      tags:
+        - ShoppingCart
+      requestBody:
+        required: true
+        content:
+          'application/vnd.eshop.v1+json':
+            schema:
+              $ref: '#/components/schemas/ShoppingCartItemCreate'
+      responses:
+        '201':
+          description: Product added to shopping cart
+          headers:
+            Location:
+              $ref: '#/components/headers/hdrLocation'
+    get:
+      summary: Get shopping cart content
+      operationId: getShoppingCartContent
+      tags:
+        - ShoppingCart
+      responses:
+        '200':
+          description: Shopping cart content
+          content:
+            'application/vnd.eshop.v1+json':
+              schema:
+                $ref: '#/components/schemas/ShoppingCartItems'
+    delete:
+      summary: Clean shopping cart
+      operationId: cleanShoppingCart
+      tags:
+        - ShoppingCart
+      responses:
+        '204':
+          description: Shopping cart is clear
+
+  '/shopping-cart/{sku}':
+    delete:
+      summary: Remove product from shopping cart
+      operationId: removeProdutFromShoppingCart
+      tags:
+        - ShoppingCart
+      parameters:
+        - $ref: '#/components/parameters/ppSku'
+      responses:
+        '204':
+          description: Product removed from shopping cart
+
+  '/shopping-cart-checkout':
+    post:
+      summary: Check-out shopping cart to make order
+      operationId: shoppingCartCheckout
+      tags:
+        - ShoppingCart
+      requestBody:
+        required: true
+        content:
+          'application/vnd.eshop.v1+json':
+            schema:
+              $ref: '#/components/schemas/ShoppingCartCheckoutCreate'
+      responses:
+        '201':
+          description: >
+            `ShoppingCartCheckout` resource created.
+            In the `Location` header there is a URI of resource to complete checkout.
+          headers:
+            Location:
+              $ref: '#/components/headers/hdrLocation'
+
+  '/shopping-cart-checkout/{checkout_ref}':
+    parameters:
+      - in: path
+        name: checkout_ref
+        required: true
+        schema:
+          type: string
+          maxLength: 100
+    get:
+      summary: Get shopping cart checkout state
+      operationId: getShoppingCartCheckout
+      tags:
+        - ShoppingCart
+      responses:
+        '200':
+          description: See the response body for checkout state
+          content:
+            'application/vnd.eshop.v1+json':
+              schema:
+                $ref: '#/components/schemas/ShoppingCartCheckout'
+    delete:
+      summary: Cancel checkout
+      operationId: shoppingCartCancelCheckout
+      tags:
+        - ShoppingCart
+      responses:
+        '204':
+          description: Checkout cancelled
+
+  '/orders':
+    get:
+      summary: Orders list
+      operationId: listOrders
+      tags:
+        - Orders
+      responses:
+        '200':
+          description: Orders in the response body
+
+  '/orders/{order_id}':
+    get:
+      summary: Get order information
+      operationId: getOrder
+      tags:
+        - Orders
+      parameters:
+        - $ref: '#/components/parameters/ppOrderId'
+      responses:
+        '200':
+          description: Order representation in the response body
+          content:
+            'application/vnd.eshop.v1+json':
+              schema:
+                $ref: '#/components/schemas/OrdGetOrderInfoResponse'
+
+components:
+  headers:
+    hdrLocation:
+      description: Created resource URI
+      schema:
+        type: string
+  parameters:
+    qpPage:
+      description: Required search results collection page
+      in: query
+      name: page
+      required: false
+      schema:
+        $ref: '#/components/schemas/PageNumber'
+
+    qpPageSize:
+      description: Required search results collection page size
+      in: query
+      name: page_size
+      required: false
+      schema:
+        $ref: '#/components/schemas/PageSize'
+
+    ppSku:
+      description: SKU of the product in the catalog
+      in: path
+      name: sku
+      required: true
+      schema:
+        $ref: '#/components/schemas/SKU'
+
+    ppSearchResultsKey:
+      description: Search results key
+      in: path
+      name: search_results_key
+      required: true
+      schema:
+        type: string
+
+    ppOrderId:
+      description: Order ID
+      in: path
+      name: order_id
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    RootLinks:
+      type: object
+      properties:
+        'https://api.eshop.com/link-rels/catalog/content':
+          allOf:
+            - $ref: '#/components/schemas/Link'
+            - example:
+                href: 'https://api.eshop.com/catalog-products'
+                title: 'Manage catalog content'
+        'https://api.eshop.com/link-rels/catalog/search':
+          allOf:
+            - $ref: '#/components/schemas/Link'
+            - example:
+                href: 'https://api.eshop.com/catalog/search'
+                title: 'Search for products'
+        'https://api.eshop.com/link-rels/shopping-cart':
+          allOf:
+            - $ref: '#/components/schemas/Link'
+            - example:
+                href: 'https://api.eshop.com/shopping-cart'
+                title: 'Your Shopping cart'
+        'https://api.eshop.com/link-rels/orders':
+          allOf:
+            - $ref: '#/components/schemas/Link'
+            - example:
+                href: 'https://api.eshop.com/orders'
+                title: 'Your Orders'
+
+    PaginatedCollection:
+      type: object
+      x-model-type: operational
+      properties:
+        page:
+          $ref: '#/components/schemas/PageNumber'
+        page_size:
+          $ref: '#/components/schemas/PageSize'
+        total_elements:
+          type: integer
+          format: int32
+          minimum: 0
+        _links:
+          type: object
+          properties:
+            self:
+              allOf:
+                - $ref: '#/components/schemas/Link'
+            next:
+              allOf:
+                - $ref: '#/components/schemas/Link'
+                - description: Link to next next page
+            last:
+              allOf:
+                - $ref: '#/components/schemas/Link'
+                - description: Link to the last page
+            previous:
+              allOf:
+                - $ref: '#/components/schemas/Link'
+                - description: Link to the previous page
+            first:
+              allOf:
+                - $ref: '#/components/schemas/Link'
+                - description: Link to the first page
+      required:
+        - page
+        - page_size
+        - total_elements
+        - _links
+
+    PageNumber:
+      description: Page number
+      x-model-type: basic
+      type: integer
+      format: int32
+      minimum: 1
+      default: 1
+
+    PageSize:
+      description: Page size
+      x-model-type: basic
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 100
+      default: 20
+
+    ProductProperties:
+      description: >
+        Reusable definition of `CatalogProduct` resource properties
+      type: object
+      x-model-type: operational
+      properties:
+        sku:
+          $ref: '#/components/schemas/SKU'
+        product_name:
+          $ref: '#/components/schemas/ProductName'
+        product_description:
+          $ref: '#/components/schemas/ProductDescription'
+        bar_codes_gs1:
+          description: Bar codes list
+          type: array
+          items:
+            $ref: '#/components/schemas/BarCodeGS1'
+        category_ref:
+          $ref: '#/components/schemas/CategoryRef'
+        price:
+          $ref: '#/components/schemas/ProductPrice'
+        features:
+          description: List of product features
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductFeature'
+          minItems: 1
+          maxItems: 40
+          uniqueItems: true
+
+    CatalogProductCreate:
+      description: >
+        Represention of properties to use for create `CatalogProduct` resource
+      allOf:
+        - $ref: '#/components/schemas/ProductProperties'
+        - type: object
+          required:
+            - sku
+            - product_name
+            - category_ref
+            - price
+
+    CatalogProducts:
+      description: >
+        `CatalogProducts` collection resource representation
+      allOf:
+        - type: object
+          properties:
+            _links:
+              type: object
+              properties:
+                'https://api.eshop.com/link-rels/catalog/content/add-product':
+                  allOf:
+                    - $ref: '#/components/schemas/Link'
+        - $ref: '#/components/schemas/PaginatedCollection'
+        - type: object
+          properties:
+            _embedded:
+              type: object
+              properties:
+                products:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CatalogProduct'
+              required:
+                - products
+          required:
+            - _embedded
+
+    CatalogProductPatch:
+      description: >
+        Represention of properties to use for update `CatalogProduct` resource
+      allOf:
+        - $ref: '#/components/schemas/ProductProperties'
+        - type: object
+          minProperties: 1
+
+    CatalogProduct:
+      description: >
+        Represention of `CatalogProduct` resource
+      allOf:
+        - $ref: '#/components/schemas/ProductProperties'
+        - type: object
+          properties:
+            _links:
+              type: object
+              properties:
+                self:
+                  allOf:
+                    - $ref: '#/components/schemas/Link'
+                'https://api.eshop.com/link-rels/catalog/content/remove-product':
+                  allOf:
+                    - $ref: '#/components/schemas/Link'
+                'https://api.eshop.com/link-rels/catalog/content/update-product':
+                  allOf:
+                    - $ref: '#/components/schemas/Link'
+          required:
+            - sku
+            - product_name
+            - product_description
+            - bar_code
+            - category_ref
+            - price
+            - _links
+
+    CatalogSearchResultsCreate:
+      description: |
+        Representation to create `CatalogSearchResults` resource
+      type: object
+      properties:
+        query:
+          $ref: '#/components/schemas/CatalogSearchResultsQuery'
+        sort:
+          description: Required results sorting
+          type: string
+          enum:
+            - price_asc
+            - price_desc
+          default: 'price_asc'
+        ttl:
+          description: Time To Live for search results
+          type: string
+          pattern: '(+d)(m|h)'
+          default: '24h'
+          example: '1h'
+        page_size:
+          $ref: '#/components/schemas/PageSize'
+      required:
+        - query
+
+    CatalogSearchResultsQuery:
+      description: |
+        Query parameters to create `CatalogSearchResults` resource
+      type: object
+      properties:
+        q:
+          description: |
+            Full-text search query.
+            Is used to search within product name and description
+          type: string
+          minLength: 3
+          maxLength: 30
+          example: 'iPh'
+        category:
+          $ref: '#/components/schemas/CategoryRef'
+        price_from:
+          type: number
+          minimum: 0
+          format: float
+          example: 100.0
+        price_to:
+          type: number
+          minimum: 0
+          format: float
+          example: 500.0
+      minProperties: 1
+
+    CatalogSearchResults:
+      description: |
+        `CatalogSearchResults` collection resource representation
+      allOf:
+        - $ref: '#/components/schemas/PaginatedCollection'
+        - type: object
+          properties:
+            _embedded:
+              type: object
+              properties:
+                search_results:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CatalogSearchResult'
+              required:
+                - search_results
+          required:
+            - _embedded
+
+    CatalogSearchResult:
+      description: |
+        `CatalogSearchResult` resource representation
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/CatalogProductLinks'
+        product_name:
+          $ref: '#/components/schemas/ProductName'
+        product_description:
+          $ref: '#/components/schemas/ProductDescription'
+        category_name:
+          $ref: '#/components/schemas/CategoryName'
+        price:
+          $ref: '#/components/schemas/ProductPrice'
+      required:
+        - product_name
+        - product_description
+        - category_name
+        - price
+
+    CatalogProductLinks:
+      type: object
+      x-model-type: operational
+      properties:
+        self:
+          allOf:
+            - $ref: '#/components/schemas/Link'
+        'https://api.eshop.com/link-rels/shopping-cart/add-item':
+          allOf:
+            - $ref: '#/components/schemas/Link'
+
+    CatalogProductItem:
+      allOf:
+        - $ref: '#/components/schemas/ProductProperties'
+        - type: object
+          properties:
+            _links:
+              $ref: '#/components/schemas/CatalogProductLinks'
+          required:
+            - product_name
+            - product_description
+            - bar_code
+            - category
+            - category_ref
+            - price
+
+    ShoppingCartItemCreate:
+      description: >
+        Representation to create `ShoppingCartItem` resource
+      type: object
+      properties:
+        sku:
+          $ref: '#/components/schemas/SKU'
+        qty:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+      required:
+        - sku
+        - qty
+
+    ShoppingCartItems:
+      description: Shopping cart items list
+      type: object
+      properties:
+        _links:
+          type: object
+          properties:
+            'https://api.eshop.com/link-rels/shopping-cart/clean':
+              allOf:
+                - $ref: '#/components/schemas/Link'
+            'https://api.eshop.com/link-rels/shopping-cart/checkout':
+              allOf:
+                - $ref: '#/components/schemas/Link'
+        total:
+          type: number
+          format: float
+        _embedded:
+          type: object
+          properties:
+            items:
+              description: Products in the shopping cart
+              type: array
+              items:
+                $ref: '#/components/schemas/ShoppingCartItem'
+          required:
+            - items
+      required:
+        - _embedded
+        - total
+
+    ShoppingCartItem:
+      type: object
+      properties:
+        _links:
+          type: object
+          properties:
+            'https://api.eshop.com/link-rels/shopping-cart/remove-item':
+              allOf:
+                - $ref: '#/components/schemas/Link'
+            'https://api.eshop.com/link-rels/shopping-cart/change-item-quantity':
+              allOf:
+                - $ref: '#/components/schemas/Link'
+            'https://api.eshop.com/link-rels/catalog/search/item':
+              allOf:
+                - $ref: '#/components/schemas/Link'
+        product_name:
+          $ref: '#/components/schemas/ProductName'
+        product_description:
+          $ref: '#/components/schemas/ProductDescription'
+        price:
+          $ref: '#/components/schemas/ProductPrice'
+        qty:
+          description: Quantity of product in shopping cart
+          type: integer
+          format: int32
+        total:
+          type: number
+          format: float
+      required:
+        - product_name
+        - price
+        - qty
+        - total
+
+    ShoppingCartCheckoutCreate:
+      description: |
+        Representation properties to create `ShoppingCartCheckout` resource
+      type: object
+      properties:
+        delivery_address:
+          type: string
+          maxLength: 2000
+        notes:
+          type: string
+          maxLength: 1000
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethod'
+      required:
+        - delivery_address
+        - payment_method
+
+    ShoppingCartCheckout:
+      description: |
+        `ShoppingCartCheckout` resource representation
+      type: object
+      properties:
+        _links:
+          type: object
+          properties:
+            'https://api.eshop.com/link-rels/payment':
+              allOf:
+                - $ref: '#/components/schemas/Link'
+            'https://api.eshop.com/link-rels/shopping-cart/cancel-checkout':
+              allOf:
+                - $ref: '#/components/schemas/Link'
+        delivery_address:
+          type: string
+          maxLength: 2000
+        notes:
+          type: string
+          maxLength: 1000
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethod'
+        checkout_status:
+          $ref: '#/components/schemas/ShoppingCartCheckoutStatus'
+        customer_contacts:
+          $ref: '#/components/schemas/Customer'
+      required:
+        - delivery_address
+        - payment_method
+        - _embedded
+
+    PaymentMethod:
+      type: string
+      x-model-type: basic
+      enum:
+        - VISA
+        - MasterCard
+        - Cache
+        - Coupon
+
+    ShoppingCartCheckoutStatus:
+      type: string
+      x-model-type: basic
+      enum:
+        - AwaitingForPayment
+        - Paid
+        - CancelledByCustomer
+        - CancelledDueToPaymentTimeout
+
+    Customer:
+      type: object
+      x-model-type: basic
+      properties:
+        name:
+          type: string
+          maxLength: 1000
+        email:
+          type: string
+          maxLength: 100
+        phone:
+          type: string
+          maxLength: 20
+      required:
+        - name
+        - email
+        - phone
+
+    OrdGetOrderInfoResponse:
+      type: object
+
+    CatalogCategories:
+      description: |
+        'CatalogCategories' resource representation
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              ref:
+                $ref: '#/components/schemas/CategoryRef'
+              name:
+                $ref: '#/components/schemas/CategoryName'
+            required:
+              - ref
+              - name
+      required:
+        - categories
+
+    SKU:
+      description: SKU of the product
+      type: string
+      x-model-type: basic
+      maxLength: 20
+      minLength: 10
+      example: '0001115000001'
+
+    ProductName:
+      description: Product name
+      type: string
+      x-model-type: basic
+      maxLength: 100
+      minLength: 5
+      example: 'iPhone 10s'
+
+    ProductDescription:
+      description: Product description
+      type: string
+      x-model-type: basic
+      maxLength: 1000
+      example: 'Most interesting iPhone model'
+      nullable: true
+
+    BarCodeGS1:
+      description: GS1 bar code
+      type: integer
+      x-model-type: basic
+      format: int64
+      minimum: 100000000
+      maximum: 999999999
+      nullable: true
+      example: '18222000111'
+
+    CategoryRef:
+      description: Reference to some products category
+      type: string
+      x-model-type: basic
+      example: '00111003344'
+
+    CategoryName:
+      description: Products category name
+      type: string
+      x-model-type: basic
+      example: 'Smartphones'
+
+    ProductPrice:
+      description: Product price
+      type: number
+      format: float
+      x-model-type: basic
+      minimum: 0
+      example: 440.12
+
+    ProductFeatureProperties:
+      description: Base properties for product feature
+      type: object
+      x-model-type: operational
+      properties:
+        '@type':
+          type: string
+          enum:
+            - string
+            - number
+            - boolean
+            - enum
+        code:
+          type: string
+          maxLength: 20
+        title:
+          type: string
+          maxLength: 30
+        description:
+          type: string
+          maxLength: 200
+      required:
+        - '@type'
+        - code
+        - title
+
+    NumberProductFeature:
+      description: Product feature with number value
+      x-model-type: basic
+      allOf:
+        - $ref: '#/components/schemas/ProductFeatureProperties'
+        - type: object
+          properties:
+            value:
+              type: number
+              format: float
+          required:
+            - value
+      example:
+        '@type': number
+        code: RAM-MB
+        title: RAM Size in MB
+        value: 64000
+
+    StringProductFeature:
+      description: Product feature with string value
+      x-model-type: basic
+      allOf:
+        - $ref: '#/components/schemas/ProductFeatureProperties'
+        - type: object
+          properties:
+            value:
+              type: string
+          required:
+            - value
+      example:
+        '@type': string
+        code: OSVer
+        title: OS Version
+        value: iOS-GrennHood
+
+    BooleanProductFeature:
+      description: Product feature with boolean value
+      x-model-type: basic
+      allOf:
+        - $ref: '#/components/schemas/ProductFeatureProperties'
+        - type: object
+          properties:
+            value:
+              type: boolean
+          required:
+            - value
+      example:
+        '@type': boolean
+        code: Wi-Fi
+        title: Ability to work with Wi-Fi
+        value: true
+
+    ProductFeature:
+      description: Product feature (e.q. shoes size, phone screen size, ...)
+      x-model-type: basic
+      oneOf:
+        - $ref: '#/components/schemas/StringProductFeature'
+        - $ref: '#/components/schemas/BooleanProductFeature'
+        - $ref: '#/components/schemas/NumberProductFeature'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          string: '#/components/schemas/StringProductFeature'
+          boolean: '#/components/schemas/BooleanProductFeature'
+          number: '#/components/schemas/NumberProductFeature'
+
+    Link:
+      description: link to some other resource or state transition
+      x-model-type: basic
+      type: object
+      properties:
+        title:
+          type: string
+        href:
+          type: string
+      required:
+        - href

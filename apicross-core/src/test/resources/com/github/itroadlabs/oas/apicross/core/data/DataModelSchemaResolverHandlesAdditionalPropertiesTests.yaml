@@ -1,0 +1,37 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Test
+paths: {}
+components:
+  schemas:
+    ObjectType1:
+      type: object
+      properties:
+        a:
+          type: integer
+      additionalProperties: true
+
+    ObjectType2:
+      type: object
+      properties:
+        a:
+          type: integer
+      additionalProperties:
+        $ref: '#/components/schemas/AdditionalPropertyType'
+
+
+    AdditionalPropertyType:
+      type: object
+      properties:
+        b:
+          type: string
+
+
+    ObjectType3:
+      type: object
+      properties:
+        a:
+          type: integer
+      additionalProperties:
+        type: string

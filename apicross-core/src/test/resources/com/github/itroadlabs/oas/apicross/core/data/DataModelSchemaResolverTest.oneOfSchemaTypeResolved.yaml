@@ -1,0 +1,64 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Test
+paths: {}
+components:
+  schemas:
+    OneOfSchemaType:
+      oneOf:
+        - $ref: '#/components/schemas/OneOfSchemaTypePart1'
+        - $ref: '#/components/schemas/OneOfSchemaTypePart2'
+      discriminator:
+        propertyName: type
+
+    OneOfSchemaTypeWithMaping:
+      oneOf:
+        - $ref: '#/components/schemas/OneOfSchemaTypePart1'
+        - $ref: '#/components/schemas/OneOfSchemaTypePart2'
+      discriminator:
+        propertyName: type
+        mapping:
+          part1: '#/components/schemas/OneOfSchemaTypePart1'
+          part2: '#/components/schemas/OneOfSchemaTypePart2'
+
+
+    InheritanceCommonPropertiesSchema:
+      type: object
+      properties:
+        type:
+          type: string
+        commonProperty1:
+          type: string
+        commonProperty2:
+          type: string
+      required:
+        - type
+        - commonProperty1
+
+    OneOfSchemaTypePart1:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/InheritanceCommonPropertiesSchema'
+        - type: object
+          properties:
+            type:
+              type: string
+            a:
+              type: string
+            b:
+              type: string
+
+    OneOfSchemaTypePart2:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/InheritanceCommonPropertiesSchema'
+        - type: object
+          properties:
+            c:
+              type: array
+              items:
+                type: string
+
+
+

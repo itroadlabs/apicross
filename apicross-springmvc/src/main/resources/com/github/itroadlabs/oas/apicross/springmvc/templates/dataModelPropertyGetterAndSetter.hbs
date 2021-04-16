@@ -1,0 +1,120 @@
+{{!-- ObjectDataModelProperty --}}
+{{#if (and optional generatorOpts.useJsonNullable)}}
+    {{#unless writeOnly}}
+        {{#if deprecated}}@Deprecated{{/if}}
+        @JsonGetter("{{{name}}}")
+        protected JsonNullable< {{#with type}}{{> typeWithoutListConstraints}}{{/with}} > {{resolvedName}}Json() {
+        return this.{{resolvedName}};
+        }
+    {{/unless}}
+
+    {{> documentation }}
+    {{#if nullable}}@Nullable{{/if}}
+    @JsonIgnore
+    {{#if deprecated}}@Deprecated{{/if}}
+    public {{#with type}}{{> typeWithoutListConstraints}}{{/with}} get{{capitalizeFirst resolvedName}}() throws NoSuchElementException {
+    return this.{{resolvedName}}.get();
+    }
+
+    {{> documentation }}
+    {{#if nullable}}@Nullable{{/if}}
+    @JsonIgnore
+    {{#if deprecated}}@Deprecated{{/if}}
+    public {{#with type}}{{> typeWithoutListConstraints}}{{/with}} get{{capitalizeFirst resolvedName}}OrElse({{#with type}}{{> typeWithoutListConstraints}}{{/with}} defaultValue) {
+    return this.{{resolvedName}}.isPresent()? this.{{resolvedName}}.get() : defaultValue;
+    }
+
+    @JsonIgnore
+    {{#if deprecated}}@Deprecated{{/if}}
+    public boolean is{{capitalizeFirst resolvedName}}Present() {
+    return this.{{resolvedName}}.isPresent();
+    }
+
+    {{#if nullable}}
+    @JsonIgnore
+    {{#if deprecated}}@Deprecated{{/if}}
+    public boolean is{{capitalizeFirst resolvedName}}PresentAndNotNull() {
+    return this.{{resolvedName}}.isPresent() && this.{{resolvedName}}.get() != null;
+    }
+    {{else}}
+    @JsonIgnore
+    /** will be generated only for nullable fields */
+    @Deprecated
+    public boolean is{{capitalizeFirst resolvedName}}PresentAndNotNull() {
+    return this.{{resolvedName}}.isPresent() && this.{{resolvedName}}.get() != null;
+    }
+    {{/if}}
+
+    public void if{{capitalizeFirst resolvedName}}Present(Consumer<{{#with type}}{{> typeWithoutListConstraints}}{{/with}}> consumer) {
+    if(this.{{resolvedName}}.isPresent()) { consumer.accept(this.{{resolvedName}}.get()); }
+    }
+
+    {{#unless nullable}}
+    /** will be generated only for nullable fields */
+    @Deprecated
+    {{/unless}}
+    public void if{{capitalizeFirst resolvedName}}PresentAndNotNull(Consumer<{{#with type}}{{> typeWithoutListConstraints}}{{/with}}> consumer) {
+    if(this.{{resolvedName}}.isPresent()) {
+    {{#with type}}{{> type}}{{/with}} value = this.{{resolvedName}}.get();
+    if(value != null) { consumer.accept(value); }
+    }
+    }
+
+{{else}}
+    {{> documentation }}
+    {{#if deprecated}}@Deprecated{{/if}}
+    {{#if writeOnly}}
+        @JsonIgnore
+    {{else}}
+        @JsonGetter("{{{name}}}")
+    {{/if}}
+    public {{#with type}}{{> type}}{{/with}} get{{capitalizeFirst resolvedName}}() {
+    return this.{{resolvedName}};
+    }
+{{/if}}
+
+{{!-- Setters --}}
+{{#if deprecated}}@Deprecated{{/if}}
+{{#if readOnly}}
+    @JsonIgnore
+{{else}}
+    @JsonSetter("{{{name}}}")
+{{/if}}
+public void set{{capitalizeFirst resolvedName}}({{#unless nullable}}@Nonnull{{/unless}} {{#with type}}{{> typeWithoutListConstraints}}{{/with}} value) {
+this.$specifiedProperties.add("{{name}}");
+this.{{resolvedName}} = {{#if (and optional generatorOpts.useJsonNullable)}}JsonNullable.of(value){{else}}value{{/if}};
+}
+
+{{#if deprecated}}@Deprecated{{/if}}
+public {{../typeName}} with{{capitalizeFirst resolvedName}}({{#unless nullable}}@Nonnull{{/unless}} {{#with type}}{{> typeWithoutListConstraints}}{{/with}} value) {
+this.$specifiedProperties.add("{{name}}");
+this.{{resolvedName}} = {{#if (and optional generatorOpts.useJsonNullable)}}JsonNullable.of(value){{else}}value{{/if}};
+return this;
+}
+
+/**
+ * use <code>with*()</code> alternative method
+ */
+@Deprecated
+public {{../typeName}} {{resolvedName}}({{#unless nullable}}@Nonnull{{/unless}} {{#with type}}{{> typeWithoutListConstraints}}{{/with}} value) {
+return with{{capitalizeFirst resolvedName}}(value);
+}
+
+{{#unless nullable}}
+    {{#if deprecated}}@Deprecated{{/if}}
+    public  {{../typeName}} with{{capitalizeFirst resolvedName}}IfNotNull({{#with type}}{{> typeWithoutListConstraints}}{{/with}} value) {
+    if(value != null) {
+    this.$specifiedProperties.add("{{name}}");
+    this.{{resolvedName}} = {{#if (and optional generatorOpts.useJsonNullable)}}JsonNullable.of(value){{else}}value{{/if}};
+    }
+    return this;
+    }
+
+    /**
+    * use <code>with*IfNotNull()</code> alternative method
+    */
+    @Deprecated
+    public  {{../typeName}} {{resolvedName}}IfNotNull({{#with type}}{{> typeWithoutListConstraints}}{{/with}} value) {
+    return with{{capitalizeFirst resolvedName}}IfNotNull(value);
+    }
+{{/unless}}

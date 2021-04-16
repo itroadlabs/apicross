@@ -1,0 +1,12 @@
+{{!-- ObjectDataModelProperty --}}
+{{> documentation }}
+{{#with type}}{{> dataModelPropertyConstraints}}{{/with}}
+{{#if (and optional generatorOpts.useJsonNullable)}}
+    {{#with type}}
+        private JsonNullable< {{> type}} > {{../resolvedName}} {{> dataModelPropertyDefaultValueOptional}};
+    {{/with}}
+{{else}}
+    {{#with type}}
+        private {{> type}} {{../resolvedName}} {{> dataModelPropertyDefaultValue}};
+    {{/with}}
+{{/if}}

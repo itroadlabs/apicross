@@ -1,0 +1,420 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: API платформы проведения творческих конкурсов IK@RUS
+tags:
+  - name: Storefront
+    description: Витрина конкурсов
+  - name: Votes
+    description: Голосование
+  - name: Advertisment
+    description: Реклама
+paths:
+  '/sf/competitions':
+    get:
+      summary: Список открытых конкурсов
+      operationId: listOpenCompetitions
+      tags:
+        - Storefront
+      parameters:
+        - $ref: 'common-models.yaml#/components/parameters/PageSizeParameter'
+        - $ref: 'common-models.yaml#/components/parameters/PageNumberParameter'
+        - in: query
+          name: ids
+          required: false
+          description: Список идентификаторов конкурсов
+          schema:
+            type: array
+            maxItems: 20
+            minItems: 1
+            items:
+              type: string
+              maxLength: 36
+            uniqueItems: true
+      responses:
+        '200':
+          description: Список конкурсов в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/SfListCompetitionsResponse'
+
+  '/sf/competitions/{competitionId}':
+    get:
+      summary: Получение описания открытого конкурса
+      operationId: getCompetitionDescription
+      tags:
+        - Storefront
+      parameters:
+        - $ref: 'common-models.yaml#/components/parameters/CompetitionIdPathParameter'
+        - name: embedWorks
+          in: query
+          required: false
+          deprecated: true
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Описание конкурса в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/SfGetCompetitionResponse'
+
+  '/sf/competitions/{competitionId}/works':
+    get:
+      summary: Получение списка конкурсных работ
+      operationId: listCompetitionWorks
+      tags:
+        - Storefront
+      parameters:
+        - $ref: 'common-models.yaml#/components/parameters/CompetitionIdPathParameter'
+        - $ref: 'common-models.yaml#/components/parameters/PageSizeParameter'
+        - $ref: 'common-models.yaml#/components/parameters/PageNumberParameter'
+      responses:
+        '200':
+          description: Список работ в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/SfListCompetitionWorksResponse'
+
+  '/sf/works/{workId}':
+    get:
+      summary: Получение описания конкурсной работы
+      operationId: getWork
+      tags:
+        - Storefront
+      parameters:
+        - $ref: 'common-models.yaml#/components/parameters/WorkIdPathParameter'
+        - name: embedVotes
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Описание конкурсной работы в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/SfGetCompetitionWorkResponse'
+
+  '/sf/files/{fileId}':
+    get:
+      summary: Получение медиа-контента конкурсной работы
+      operationId: getWorkMedia
+      tags:
+        - Storefront
+      parameters:
+        - $ref: 'common-models.yaml#/components/parameters/MediaFileIdPathParameter'
+      responses:
+        '200':
+          description: Медиа-контент в теле ответа
+          content:
+            'image/jpeg':
+              schema:
+                $ref: 'common-models.yaml#/components/schemas/BinaryContent'
+            'audio/mp4':
+              schema:
+                $ref: 'common-models.yaml#/components/schemas/BinaryContent'
+            'video/mp4':
+              schema:
+                $ref: 'common-models.yaml#/components/schemas/BinaryContent'
+
+  '/sf/works/{workId}/votes':
+    parameters:
+      - $ref: 'common-models.yaml#/components/parameters/WorkIdPathParameter'
+    post:
+      summary: Голосование за работу
+      operationId: vote
+      tags:
+        - Votes
+      requestBody:
+        required: true
+        content:
+          'application/vnd.demoapp.v1+json':
+            schema:
+              $ref: '#/components/schemas/VtVoteRequest'
+      responses:
+        '204':
+          description: Оценка работы принята
+    get:
+      summary: Получение списка оценок работы
+      operationId: listVotes
+      tags:
+        - Votes
+      responses:
+        '200':
+          description: Список оценок в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/VtVotesResponse'
+
+  '/sf/competitions/{competitionId}/results':
+    get:
+      summary: Получение результатов конкурса
+      operationId: getContestResults
+      tags:
+        - Votes
+      parameters:
+        - $ref: 'common-models.yaml#/components/parameters/CompetitionIdPathParameter'
+      responses:
+        '200':
+          description: Результаты конкурса в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/VtCompetitionResultsResponse'
+
+  '/ads':
+    get:
+      summary: Получение рекламы
+      operationId: getAds
+      tags:
+        - Advertisment
+      responses:
+        '200':
+          description: Рекламные сообщения в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/GetAdsResponse'
+
+components:
+  schemas:
+    SfListCompetitionsResponse:
+      type: object
+      properties:
+        page:
+          $ref: 'common-models.yaml#/components/schemas/Page'
+        pageContent:
+          type: array
+          items:
+            $ref: '#/components/schemas/SfCompetitionsShortDescription'
+          uniqueItems: true
+      required:
+        - page
+        - pageContent
+
+    SfGetCompetitionResponse:
+      type: object
+      properties:
+        id:
+          $ref: 'common-models.yaml#/components/schemas/ObjectId'
+        title:
+          $ref: 'common-models.yaml#/components/schemas/CompetitionTitle'
+        description:
+          $ref: 'common-models.yaml#/components/schemas/CompetitionDescription'
+        startDate:
+          type: string
+          format: date
+        votingTillDate:
+          type: string
+          format: date
+        acceptWorksTillDate:
+          type: string
+          format: date
+      required:
+        - id
+        - title
+        - description
+        - startDate
+        - votingTillDate
+        - acceptWorksTillDate
+
+    SfCompetitionsShortDescription:
+      type: object
+      properties:
+        id:
+          $ref: 'common-models.yaml#/components/schemas/ObjectId'
+        title:
+          $ref: 'common-models.yaml#/components/schemas/CompetitionTitle'
+        startDate:
+          type: string
+          format: date
+        votingTillDate:
+          type: string
+          format: date
+        acceptWorksTillDate:
+          type: string
+          format: date
+        works:
+          type: integer
+          format: int32
+      required:
+        - id
+        - title
+        - startDate
+        - votingTillDate
+        - acceptWorksTillDate
+        - works
+
+    SfListCompetitionWorksResponse:
+      type: object
+      properties:
+        page:
+          $ref: 'common-models.yaml#/components/schemas/Page'
+        pageContent:
+          type: array
+          items:
+            $ref: 'common-models.yaml#/components/schemas/WorkSummary'
+          uniqueItems: true
+      additionalProperties: true
+      required:
+        - page
+        - pageContent
+
+    SfGetCompetitionWorkResponse:
+      type: object
+      properties:
+        title:
+          $ref: 'common-models.yaml#/components/schemas/WorkTitle'
+        description:
+          $ref: 'common-models.yaml#/components/schemas/WorkDescription'
+        votes:
+          type: integer
+          format: int32
+        link:
+          type: string
+        _links:
+          type: object
+          additionalProperties:
+            $ref: 'common-models.yaml#/components/schemas/Link'
+      required:
+        - title
+        - description
+        - votes
+        - link
+
+    VtVoteRequest:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/ClapsVote'
+        - $ref: '#/components/schemas/PointsVote'
+      discriminator:
+        propertyName: '@type'
+
+    ClapsVote:
+      allOf:
+        - $ref: '#/components/schemas/AbstractVote'
+        - properties:
+            notes:
+              type: string
+              minLength: 5
+              maxLength: 50
+
+    AbstractVote:
+      type: object
+      properties:
+        '@type':
+          $ref: 'common-models.yaml#/components/schemas/VotingType'
+      required:
+        - '@type'
+
+    VtVotesResponse:
+      type: object
+      properties:
+        votes:
+          $ref: '#/components/schemas/VtVotesArray'
+
+    VtVotesArray:
+      oneOf:
+        - $ref: '#/components/schemas/ClapsVoteArray'
+        - $ref: '#/components/schemas/PointsVoteArray'
+      discriminator:
+        propertyName: '@type'
+
+    PointsVoteArray:
+      type: object
+      properties:
+        '@type':
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PointsVote'
+      required:
+        - '@type'
+        - items
+
+    PointsVote:
+      allOf:
+        - $ref: '#/components/schemas/AbstractVote'
+        - type: object
+          properties:
+            points:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 10
+          required:
+            - points
+
+    ClapsVoteArray:
+      type: object
+      properties:
+        '@type':
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClapsVote'
+      required:
+        - '@type'
+        - items
+
+    VtCompetitionResultsResponse:
+      type: object
+      properties:
+        winner:
+          $ref: 'common-models.yaml#/components/schemas/WorkAuthor'
+        work:
+          $ref: 'common-models.yaml#/components/schemas/WorkTitledRef'
+        votesSummary:
+          $ref: '#/components/schemas/VotesSummary'
+
+
+    AbstractVotesSummary:
+      type: object
+      properties:
+        '@type':
+          $ref: 'common-models.yaml#/components/schemas/VotingType'
+      required:
+        - '@type'
+
+    ClapsVotesSummary:
+      allOf:
+        - $ref: '#/components/schemas/AbstractVotesSummary'
+        - type: object
+          properties:
+            claps:
+              type: integer
+              format: int32
+
+    PointsVotesSummary:
+      allOf:
+        - $ref: '#/components/schemas/AbstractVotesSummary'
+        - type: object
+          properties:
+            points:
+              type: number
+              format: float
+
+    VotesSummary:
+      oneOf:
+        - $ref: '#/components/schemas/ClapsVotesSummary'
+        - $ref: '#/components/schemas/PointsVotesSummary'
+      discriminator:
+        propertyName: '@type'
+
+    GetAdsResponse:
+      type: object
+      properties:
+        ads:
+          type: array
+          items:
+            type: string
