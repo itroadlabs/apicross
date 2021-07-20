@@ -11,7 +11,7 @@ and locate these interfaces inside application "core" packages. Take a look at e
 package com.myapp.ports.adapters.web;
 
 ...
-@javax.annotation.Generated(value = "com.github.itroadlabs.oas.apicross.springmvc.SpringMvcCodeGenerator")
+@javax.annotation.Generated(value = "io.github.itroadlabs.apicross.springmvc.SpringMvcCodeGenerator")
 public class CreateMyResourceRepresentation implements IReadCreateMyResourceRepresentation {
     ...
 }
@@ -19,7 +19,7 @@ public class CreateMyResourceRepresentation implements IReadCreateMyResourceRepr
 ```java
 package com.myapp.application;
 ...
-@javax.annotation.Generated(value = "com.github.itroadlabs.oas.apicross.springmvc.SpringMvcCodeGenerator")
+@javax.annotation.Generated(value = "io.github.itroadlabs.apicross.springmvc.SpringMvcCodeGenerator")
 public interface IReadCreateMyResourceRepresentation {
     String getSomeProperty();
     ...
@@ -28,7 +28,7 @@ public interface IReadCreateMyResourceRepresentation {
 ```java
 package com.myapp.ports.adapters.web;
 ...
-@javax.annotation.Generated(value = "com.github.itroadlabs.oas.apicross.springmvc.SpringMvcCodeGenerator")
+@javax.annotation.Generated(value = "io.github.itroadlabs.apicross.springmvc.SpringMvcCodeGenerator")
 public interface MyApiHandler {
     @RequestMapping(path = "/my-resource", method = RequestMethod.POST, consumes = "application/json")
     ResponseEntity<?> createMyResource(@RequestBody(required = true) CreateMyResourceRepresentation model,
@@ -65,7 +65,7 @@ public class MyService {
 
 To enable this feature use following configuration:
 ```xml
-    <generatorOptions implementation="com.github.itroadlabs.oas.apicross.springmvc.SpringMvcCodeGeneratorOptions">
+    <generatorOptions implementation="io.github.itroadlabs.apicross.springmvc.SpringMvcCodeGeneratorOptions">
         ...
         <apiHandlerPackage>com.myapp.ports.adapters.web</apiHandlerPackage>
         <apiModelPackage>com.myapp.ports.adapters.web</apiModelPackage>

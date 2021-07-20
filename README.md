@@ -25,7 +25,7 @@ APICROSS is a tool to generate source code from OpenAPI 3.0 API specification.
     <build>
         <plugins>
             <plugin>
-                <groupId>com.github.itroadlabs.oas</groupId>
+                <groupId>io.github.itroadlabs</groupId>
                 <artifactId>apicross-maven-plugin</artifactId>
                 <version>${project.version}</version>
                 <executions>
@@ -37,8 +37,8 @@ APICROSS is a tool to generate source code from OpenAPI 3.0 API specification.
                         </goals>
                         <configuration>
                             <specUrl>file:///${project.basedir}/../api-specifications/api.yaml</specUrl>
-                            <generatorClassName>com.github.itroadlabs.oas.apicross.springmvc.SpringMvcCodeGenerator</generatorClassName>
-                            <generatorOptions implementation="com.github.itroadlabs.oas.apicross.springmvc.SpringMvcCodeGeneratorOptions">
+                            <generatorClassName>io.github.itroadlabs.apicross.springmvc.SpringMvcCodeGenerator</generatorClassName>
+                            <generatorOptions implementation="io.github.itroadlabs.apicross.springmvc.SpringMvcCodeGeneratorOptions">
                                 <apiHandlerPackage>com.myapp.web.handlers</apiHandlerPackage>
                                 <apiModelPackage>com.myapp.web.models</apiModelPackage>
                                 <writeSourcesTo>${project.build.directory}/generated-sources/java</writeSourcesTo>
@@ -48,7 +48,7 @@ APICROSS is a tool to generate source code from OpenAPI 3.0 API specification.
                 </executions>
                 <dependencies>
                     <dependency>
-                        <groupId>com.github.itroadlabs.oas</groupId>
+                        <groupId>io.github.itroadlabs</groupId>
                         <artifactId>apicross-springmvc</artifactId>
                         <version>${project.version}</version>
                     </dependency>

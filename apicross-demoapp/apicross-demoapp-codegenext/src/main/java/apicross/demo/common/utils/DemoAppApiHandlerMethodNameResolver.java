@@ -1,6 +1,6 @@
 package apicross.demo.common.utils;
 
-import com.github.itroadlabs.oas.apicross.java.DefaultRequestsHandlerMethodNameResolver;
+import io.github.itroadlabs.apicross.java.DefaultRequestsHandlerMethodNameResolver;
 import io.swagger.v3.oas.models.Operation;
 
 import javax.annotation.Nonnull;

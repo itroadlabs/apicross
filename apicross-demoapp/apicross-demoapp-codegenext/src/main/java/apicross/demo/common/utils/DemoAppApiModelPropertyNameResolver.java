@@ -1,6 +1,6 @@
 package apicross.demo.common.utils;
 
-import com.github.itroadlabs.oas.apicross.java.DefaultPropertyAndParameterNameResolver;
+import io.github.itroadlabs.apicross.java.DefaultPropertyAndParameterNameResolver;
 import io.swagger.v3.oas.models.media.Schema;
 import org.apache.commons.lang3.StringUtils;
 

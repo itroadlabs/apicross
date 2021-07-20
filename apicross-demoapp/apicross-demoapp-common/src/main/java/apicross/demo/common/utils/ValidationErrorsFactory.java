@@ -1,8 +1,8 @@
 package apicross.demo.common.utils;
 
-import com.github.itroadlabs.oas.apicross.beanvalidation.MaxProperties;
-import com.github.itroadlabs.oas.apicross.beanvalidation.MinProperties;
-import com.github.itroadlabs.oas.apicross.beanvalidation.RequiredProperties;
+import io.github.itroadlabs.apicross.beanvalidation.MaxProperties;
+import io.github.itroadlabs.apicross.beanvalidation.MinProperties;
+import io.github.itroadlabs.apicross.beanvalidation.RequiredProperties;
 import apicross.demo.common.models.QueryObjectMarker;
 
 import javax.validation.ConstraintViolation;

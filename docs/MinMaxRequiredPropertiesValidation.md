@@ -8,7 +8,7 @@ OpenAPI specification states:
 After JSON deserialization into Java object there is no information about field's presence in the JSON document.
 APICROSS by default represents optional schema fields as `JsonNullable`.
 To validate such data models there is a simple JSR-380 toolkit.
-Take a look at the `com.github.itroadlabs.oas.apicross.beanvalidation.*` classes within `apicross-support` module.
+Take a look at the `io.github.itroadlabs.apicross.beanvalidation.*` classes within `apicross-support` module.
 
 Bellow is an example of generated code:
 ```java
@@ -48,7 +48,7 @@ Validation group above can be used for validation sequence needs.
 
 To enable/disable this feature use following configuration option:
 ```xml
-    <generatorOptions implementation="com.github.itroadlabs.oas.apicross.springmvc.SpringMvcCodeGeneratorOptions">
+    <generatorOptions implementation="io.github.itroadlabs.apicross.springmvc.SpringMvcCodeGeneratorOptions">
         ...
         <enableApicrossJavaBeanValidationSupport>true</enableApicrossJavaBeanValidationSupport>
         ...

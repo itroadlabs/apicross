@@ -4,20 +4,20 @@ For Spring MVC code generation API Handler method names could be customized by f
 plugin configuration option:
 
 ```xml
-    <generatorOptions implementation="com.github.itroadlabs.oas.apicross.springmvc.SpringMvcCodeGeneratorOptions">
+    <generatorOptions implementation="io.github.itroadlabs.apicross.springmvc.SpringMvcCodeGeneratorOptions">
         ...
         <requestsHandlerMethodNameResolverClassName>com.myapp.godegen.MyMethodNameResolver</requestsHandlerMethodNameResolverClassName>
         ...
     </generatorOptions>
 ```
 
-Here `com.myapp.godegen.MyMethodNameResolver` is a class which implements `com.github.itroadlabs.oas.apicross.core.handler.RequestsHandlerMethodNameResolver` interface.
+Here `com.myapp.godegen.MyMethodNameResolver` is a class which implements `io.github.itroadlabs.apicross.core.handler.RequestsHandlerMethodNameResolver` interface.
 Some standard implementations exists:
 
 | Implementation class name | Description |
 | ---- | ---- |
-| `com.github.itroadlabs.oas.apicross.java.DefaultRequestsHandlerMethodNameResolver` | **This is default implementation**, which is used in case when no `requestsHandlerMethodNameResolverClassName` plugin configuration option defined. It makes method name on base of `operationId` (from Open API specification) and media-type consumed and produced by API operation. <br/> For example, if `operationId` is `myOperation` and operation consumes `application/json` then method name will be `myOperationConsumesJson`. When operation also produces `image/png` content then method name will be `myOperationConsumesJsonProducesImagePng`|
-| `com.github.itroadlabs.oas.apicross.java.SimpleRequestsHandlerMethodNameResolver` | This implementation just uses `operationId` (adopted to Java identifiers legal characters) as a method name |
+| `io.github.itroadlabs.apicross.java.DefaultRequestsHandlerMethodNameResolver` | **This is default implementation**, which is used in case when no `requestsHandlerMethodNameResolverClassName` plugin configuration option defined. It makes method name on base of `operationId` (from Open API specification) and media-type consumed and produced by API operation. <br/> For example, if `operationId` is `myOperation` and operation consumes `application/json` then method name will be `myOperationConsumesJson`. When operation also produces `image/png` content then method name will be `myOperationConsumesJsonProducesImagePng`|
+| `io.github.itroadlabs.apicross.java.SimpleRequestsHandlerMethodNameResolver` | This implementation just uses `operationId` (adopted to Java identifiers legal characters) as a method name |
 
 Lets imagine how `com.myapp.godegen.MyMethodNameResolver` could look. 
 Take a look at following API specification snippet and implementation code below:
@@ -46,7 +46,7 @@ Take a look at following API specification snippet and implementation code below
 ```java
 package com.myapp.godegen;
 
-import com.github.itroadlabs.oas.apicross.core.handler.RequestsHandlerMethodNameResolver;
+import io.github.itroadlabs.apicross.core.handler.RequestsHandlerMethodNameResolver;
 import io.swagger.v3.oas.models.Operation;
 
 public class MyMethodNameResolver implements RequestsHandlerMethodNameResolver {
