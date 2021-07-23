@@ -8,14 +8,12 @@ import java.util.*;
 
 public class ObjectDataModel extends DataModel {
     private String typeName;
-    private final String originalTypeName;
+    private String originalTypeName;
     private Map<String, ObjectDataModelProperty> propertiesMap = new HashMap<>();
-
     private Map<String, ObjectDataModel> inheritanceChildModels;
     private String inheritanceDiscriminatorPropertyName;
     private ObjectDataModel inheritanceParent;
     private String inheritanceDiscriminatorValue;
-
     private Set<String> propertiesOriginSchemasNames;
     private DataModel additionalPropertiesDataModel;
 
@@ -93,6 +91,9 @@ public class ObjectDataModel extends DataModel {
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;
+        if (this.originalTypeName == null) {
+            this.originalTypeName = typeName;
+        }
     }
 
     public String getOriginalTypeName() {
