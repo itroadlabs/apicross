@@ -7,6 +7,7 @@ but not vise-versa.
 
 With APICROSS it is possible to generate interface (a-la `IRead*` interface) for API models,
 and locate these interfaces inside application "core" packages. Take a look at example:
+![UML Diagramm](IReadInterfaces-UML.png)
 ```java
 package com.myapp.ports.adapters.web;
 
