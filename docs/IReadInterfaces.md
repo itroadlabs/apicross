@@ -1,5 +1,9 @@
 # IRead* interfaces feature
-This feature is for Hexagonal architecture purists.
+This feature is for [Hexagonal architecture](https://alistair.cockburn.us/hexagonal-architecture/) purists. 
+For this architecture style there is an application "core" and some "adapters" to communicate with "core" from outside world.
+Adapters can only depend on application core, but not vise-versa. 
+For an example "My Market" application supports "list market offers" and "place market offer" operations. 
+There is an adapter exposures these operations as REST API resource https://my-market.com/market-offers via HTTP GET and POST methods.
 
 Generated java classes for API models (mainly request/response models) actually belong to adapters.
 It is not possible to use such models inside application "core", because adapters can use ports from application "core",
@@ -7,13 +11,15 @@ but not vise-versa.
 
 With APICROSS it is possible to generate interface (a-la `IRead*` interface) for API models,
 and locate these interfaces inside application "core" packages. Take a look at example:
+
 ![UML Diagramm](IReadInterfaces-UML.png)
+
 ```java
 package com.myapp.ports.adapters.web;
 
 ...
 @javax.annotation.Generated(value = "io.github.itroadlabs.apicross.springmvc.SpringMvcCodeGenerator")
-public class CreateMyResourceRepresentation implements IReadCreateMyResourceRepresentation {
+public class CreateMyResourceRepresentation implements IReadCreateMyResourceDto {
     ...
 }
 ```
@@ -21,8 +27,8 @@ public class CreateMyResourceRepresentation implements IReadCreateMyResourceRepr
 package com.myapp.application;
 ...
 @javax.annotation.Generated(value = "io.github.itroadlabs.apicross.springmvc.SpringMvcCodeGenerator")
-public interface IReadCreateMyResourceRepresentation {
-    String getSomeProperty();
+public interface IReadCreateMyResourceDto {
+    String getPropertyA();
     ...
 }
 ```
@@ -58,7 +64,12 @@ package com.myapp.application;
 @Service
 @Validated
 public class MyService {
-    public void create(@Valid IReadCreateMyResourceRepresentation model) {
+    @Transactional
+    public void create(@Valid IReadCreateMyResourceDto dto) {
+        MyEntity entity = MyEntity.builder()
+            .withPropertyA(dto.getPropertyA())
+            ...
+            .build();
         ...
     }
 }
