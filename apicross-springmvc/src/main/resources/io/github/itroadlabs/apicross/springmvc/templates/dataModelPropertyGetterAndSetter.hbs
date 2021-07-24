@@ -30,34 +30,8 @@
     return this.{{resolvedName}}.isPresent();
     }
 
-    {{#if nullable}}
-    @JsonIgnore
-    {{#if deprecated}}@Deprecated{{/if}}
-    public boolean is{{capitalizeFirst resolvedName}}PresentAndNotNull() {
-    return this.{{resolvedName}}.isPresent() && this.{{resolvedName}}.get() != null;
-    }
-    {{else}}
-    @JsonIgnore
-    /** will be generated only for nullable fields */
-    @Deprecated
-    public boolean is{{capitalizeFirst resolvedName}}PresentAndNotNull() {
-    return this.{{resolvedName}}.isPresent() && this.{{resolvedName}}.get() != null;
-    }
-    {{/if}}
-
     public void if{{capitalizeFirst resolvedName}}Present(Consumer<{{#with type}}{{> typeWithoutListConstraints}}{{/with}}> consumer) {
     if(this.{{resolvedName}}.isPresent()) { consumer.accept(this.{{resolvedName}}.get()); }
-    }
-
-    {{#unless nullable}}
-    /** will be generated only for nullable fields */
-    @Deprecated
-    {{/unless}}
-    public void if{{capitalizeFirst resolvedName}}PresentAndNotNull(Consumer<{{#with type}}{{> typeWithoutListConstraints}}{{/with}}> consumer) {
-    if(this.{{resolvedName}}.isPresent()) {
-    {{#with type}}{{> type}}{{/with}} value = this.{{resolvedName}}.get();
-    if(value != null) { consumer.accept(value); }
-    }
     }
 
 {{else}}
@@ -114,7 +88,7 @@ return with{{capitalizeFirst resolvedName}}(value);
     * use <code>with*IfNotNull()</code> alternative method
     */
     @Deprecated
-    public  {{../typeName}} {{resolvedName}}IfNotNull({{#with type}}{{> typeWithoutListConstraints}}{{/with}} value) {
+    public {{../typeName}} {{resolvedName}}IfNotNull({{#with type}}{{> typeWithoutListConstraints}}{{/with}} value) {
     return with{{capitalizeFirst resolvedName}}IfNotNull(value);
     }
 {{/unless}}

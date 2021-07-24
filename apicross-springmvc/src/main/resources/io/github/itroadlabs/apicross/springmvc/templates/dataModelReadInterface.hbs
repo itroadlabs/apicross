@@ -25,11 +25,6 @@ public interface IRead{{originalTypeName}} {{#if inheritanceParentOriginalTypeNa
 
         {{#if deprecated}}@Deprecated{{/if}}
         boolean is{{capitalizeFirst resolvedName}}Present();
-
-        {{#if nullable}}
-        {{#if deprecated}}@Deprecated{{/if}}
-        boolean is{{capitalizeFirst resolvedName}}PresentAndNotNull();
-        {{/if}}
     {{else}}
         {{> documentation }}
         {{#if deprecated}}@Deprecated{{/if}}
