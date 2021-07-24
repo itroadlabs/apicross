@@ -8,7 +8,7 @@ import javax.annotation.*;
 import java.util.*;
 import java.util.function.*;
 
-{{#if containingOptionalProperties}}
+{{#if (and containingOptionalProperties generatorOpts.useJsonNullable)}}
     import org.openapitools.jackson.nullable.JsonNullable;
 {{/if}}
 

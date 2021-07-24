@@ -74,7 +74,7 @@ APICROSS is a tool to generate source code from OpenAPI 3.0 API specification.
 | dataModelsInterfacesMap | Map | TBD...  |
 | queryObjectsInterfacesMap | Map | TBD...  |
 | globalQueryObjectsInterfaces | Set | TBD... |
-| useJsonNullable | boolean | Generate Java classes for API models with `JsonNullable` class usage (`true`) or not (`false`). [Feature description here](docs/OptionalFields.md)  |
+| useJsonNullable | boolean | Generate Java classes for API models with `JsonNullable` class usage (`true`) or not (`false`). The default is `true`. [Feature description here](docs/OptionalFields.md)  |
 | enableApicrossJavaBeanValidationSupport | boolean | TBD... |
 | enableDataModelReadInterfaces | boolean | Enable generation for `IRead*` interfaces |
 | apiModelReadInterfacesPackage | String | Java package name for `IRead*` interfaces |
