@@ -1,5 +1,5 @@
 
-![maven build](https://github.com/itroadlabs/apicross/actions/workflows/maven-oss-release.yaml/badge.svg)
+![Java CI with Maven](https://github.com/itroadlabs/apicross/actions/workflows/maven-oss-release.yml/badge.svg)
 
 # Purpose
 APICROSS is a tool to generate source code from OpenAPI 3.0 API specification.
