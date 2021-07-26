@@ -1,0 +1,10 @@
+{{!-- DataModel --}}
+{{#if array}}
+    List< {{#with itemsDataModel}} {{> typeWithoutListConstraints}} {{/with}} >
+{{else if primitive}}
+    {{> primitiveType}}
+{{else if object}}
+    {{{typeName}}}
+{{else}}
+    Object
+{{/if}}

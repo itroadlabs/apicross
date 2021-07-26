@@ -1,0 +1,123 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Test API
+  description: |
+    This API used for testing OpenFeign code generator
+tags:
+  - name: test
+paths:
+  '/test-data':
+    get:
+      summary: List test data
+      operationId: listTestData
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            default: 1
+        - in: query
+          name: page_size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 200
+            default: 20
+      tags:
+        - test
+      responses:
+        '200':
+          description: Test data in the response body
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ListTestDataRepresentation'
+
+    post:
+      summary: Create test data
+      operationId: createTestData
+      tags:
+        - test
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/CreateTestDataRepresentation'
+          'application/octet-stream':
+            schema:
+              $ref: '#/components/schemas/BinaryContent'
+      responses:
+        '201':
+          description: Test data created
+
+  '/test-data/{id}':
+    get:
+      summary: Find test data by ID
+      operationId: findTestDataById
+      tags:
+        - test
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Test data in the response body
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/TestData'
+            'application/octet-stream':
+              schema:
+                $ref: '#/components/schemas/BinaryContent'
+        '404':
+          description: No test data for specified ID
+
+
+components:
+  schemas:
+    BinaryContent:
+      type: string
+      format: binary
+
+    TestData:
+      type: object
+      properties:
+        id:
+          type: string
+        property1:
+          type: string
+        property2:
+          type: string
+      required:
+        - id
+        - property1
+
+    ListTestDataRepresentation:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestData'
+        total:
+          type: integer
+        page_size:
+          type: integer
+        page_number:
+          type: integer
+
+    CreateTestDataRepresentation:
+      allOf:
+        - $ref: '#/components/schemas/TestData'
+
+
