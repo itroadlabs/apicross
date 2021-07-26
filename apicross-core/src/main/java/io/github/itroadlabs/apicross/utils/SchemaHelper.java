@@ -16,7 +16,7 @@ public class SchemaHelper {
                 || (schema instanceof NumberSchema) || (schema instanceof IntegerSchema)
                 || (schema instanceof DateSchema) || (schema instanceof DateTimeSchema)
                 || (schema instanceof UUIDSchema) || (schema instanceof ByteArraySchema)
-                || (schema instanceof PasswordSchema) || (schema instanceof BinarySchema);
+                || (schema instanceof PasswordSchema) || (schema instanceof BinarySchema) || (schema instanceof EmailSchema);
     }
 
     @Nonnull
