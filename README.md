@@ -62,6 +62,10 @@ APICROSS is a tool to generate source code from OpenAPI 3.0 API specification.
 
 | Generator option | Type | Description |
 | ---- | ---- | --- |
+| writeSourcesTo | String | Directory to write generated sources |
+| generateOnlyModels | boolean | Generated  only API models (if `true`) but not requests handlers. Default - `false` |
+| skipTags | Set | Set of OpenAPI tags to be skipped from source code generation. Operations with such tags will be skipped within code generation |
+| generateOnlyTags | Set | Set of OpenAPI tags to be included int source code generation. Only operations with such tags will be included into code generation | 
 | apiHandlerPackage | String | Java package name for API handlers (Java interfaces for Spring MVC Controllers) |
 | apiModelPackage | String | Java package name for API models (request/response) |
 | modelClassNameSuffix | String | Suffix for API model Java class name |
