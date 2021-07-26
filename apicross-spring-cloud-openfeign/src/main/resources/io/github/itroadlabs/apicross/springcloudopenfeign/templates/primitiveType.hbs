@@ -1,0 +1,37 @@
+{{#eq type 'string'}}
+    {{#eq format 'date'}}
+        java.time.LocalDate
+    {{else eq format 'date-time'}}
+        java.time.ZonedDateTime
+    {{else eq format 'byte'}}
+        byte[]
+    {{else eq format 'binary'}}
+        org.springframework.core.io.Resource
+        {{!--
+        {{#if responseBody}}
+        {{else}}
+            java.io.InputStream
+        {{/if}}
+        --}}
+    {{else}}
+        String
+    {{/eq}}
+{{else eq type 'integer'}}
+    {{#eq format 'int32'}}
+        Integer
+    {{else}}
+        Long
+    {{/eq}}
+{{else eq type 'number'}}
+    {{#eq format 'float'}}
+        Float
+    {{else eq format 'decimal'}} {{!-- this is non-OAS-standardly --}}
+        java.math.BigDecimal
+    {{else}}
+        Double
+    {{/eq}}
+{{else eq type 'boolean'}}
+    Boolean
+{{else}}
+    Object
+{{/eq}}

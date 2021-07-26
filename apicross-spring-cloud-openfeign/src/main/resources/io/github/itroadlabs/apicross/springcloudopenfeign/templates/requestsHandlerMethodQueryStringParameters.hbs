@@ -1,0 +1,5 @@
+{{#each queryParameters}}
+    {{#with type}}
+        @RequestParam(name="{{{../name}}}") {{> typeWithoutListConstraints}} {{../resolvedName}} ,
+    {{/with}}
+{{/each}}

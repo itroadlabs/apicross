@@ -1,0 +1,17 @@
+
+{{> documentation }}
+{{> requestsHandlerMethodHttpMapping}}
+ResponseEntity<{{> requestsHandlerMethodResponseBodyType}}> {{methodName}}(
+{{> requestsHandlerMethodPathVars}}
+{{#if pathParameters}},{{/if}}
+{{> requestsHandlerMethodQueryStringParameters}}
+@RequestHeader HttpHeaders headers
+{{#if requestBody}}
+    ,
+    {{#if requestBody.customAttributes.avoidRequestBodyAnnotation}}
+        {{> requestsHandlerMethodRequestBodyType}} requestEntity
+    {{else}}
+        @RequestBody {{> requestsHandlerMethodRequestBodyType}} requestBody
+    {{/if}}
+{{/if}}
+);
