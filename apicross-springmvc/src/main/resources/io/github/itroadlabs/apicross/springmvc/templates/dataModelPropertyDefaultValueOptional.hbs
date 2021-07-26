@@ -3,7 +3,7 @@
         {{#if string}}
             = JsonNullable.of("{{{defaultValue}}}")
         {{else}}
-            = JsonNullable.of({{{defaultValue}}})
+            = JsonNullable.of({{{defaultValue}}}{{#if integer}}{{#eq format 'int64'}}L{{/eq}}{{/if}})
         {{/if}}
     {{else}}
         = JsonNullable.undefined()
