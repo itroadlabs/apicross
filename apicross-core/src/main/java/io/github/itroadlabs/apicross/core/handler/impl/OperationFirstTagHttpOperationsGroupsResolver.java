@@ -1,7 +1,8 @@
 package io.github.itroadlabs.apicross.core.handler.impl;
 
-import io.github.itroadlabs.apicross.core.handler.model.HttpOperationsGroup;
+import io.github.itroadlabs.apicross.CodeGeneratorException;
 import io.github.itroadlabs.apicross.core.handler.HttpOperationsGroupsResolver;
+import io.github.itroadlabs.apicross.core.handler.model.HttpOperationsGroup;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,9 @@ public class OperationFirstTagHttpOperationsGroupsResolver implements HttpOperat
             log.debug("For uri '{}' were detected following HTTP methods: {}", uriPath, operationsByHttpMethod.keySet());
             for (PathItem.HttpMethod httpMethod : operationsByHttpMethod.keySet()) {
                 Operation operation = operationsByHttpMethod.get(httpMethod);
+                if (operation.getTags() == null || operation.getTags().isEmpty()) {
+                    throw new CodeGeneratorException("Operation definition must have at least one tag assigned, but operation id = '" + operation.getOperationId() + "' does not");
+                }
                 if (needsToBoSkipped(operation)) {
                     continue;
                 }
