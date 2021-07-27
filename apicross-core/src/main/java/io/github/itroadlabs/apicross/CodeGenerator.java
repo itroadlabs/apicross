@@ -1,17 +1,17 @@
 package io.github.itroadlabs.apicross;
 
+import com.google.common.base.Preconditions;
 import io.github.itroadlabs.apicross.core.data.DataModelResolver;
 import io.github.itroadlabs.apicross.core.data.PropertyNameResolver;
 import io.github.itroadlabs.apicross.core.data.model.*;
+import io.github.itroadlabs.apicross.core.handler.*;
 import io.github.itroadlabs.apicross.core.handler.impl.DefaultRequestsHandlerMethodsResolver;
 import io.github.itroadlabs.apicross.core.handler.impl.OperationFirstTagHttpOperationsGroupsResolver;
 import io.github.itroadlabs.apicross.core.handler.model.RequestsHandler;
-import io.github.itroadlabs.apicross.core.handler.*;
 import io.github.itroadlabs.apicross.utils.OpenApiComponentsIndex;
 import io.github.itroadlabs.apicross.utils.OpenApiSpecificationParser;
 import io.github.itroadlabs.apicross.utils.SchemaHelper;
 import io.github.itroadlabs.apicross.utils.UnusedSchemasCleaner;
-import com.google.common.base.Preconditions;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.Schema;
@@ -19,7 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 public abstract class CodeGenerator<T extends CodeGeneratorOptions> {
@@ -32,6 +35,7 @@ public abstract class CodeGenerator<T extends CodeGeneratorOptions> {
     }
 
     public void setOptions(T options) throws Exception {
+        log.info("Code generator options: {}", options.toString());
         this.options = options;
         this.writeSourcesTo = new File(options.getWriteSourcesTo());
     }
