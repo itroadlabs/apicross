@@ -1,0 +1,27 @@
+package {{package}};
+
+////
+//// Hello from alternative template:
+////    apicross-demoapp\apicross-demoapp-codegenext\src\main\resources\apicross\demoapp\codegenext\alternative_templates\requestsHandler.hbs
+////
+
+import javax.servlet.http.*;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.util.*;
+{{#each customAttributes.imports}}
+    import {{this}};
+{{/each}}
+
+{{#if customAttributes.enableSpringSecurityAuthPrincipal}}
+    import org.springframework.security.core.annotation.CurrentSecurityContext;
+    import org.springframework.security.core.Authentication;
+{{/if}}
+
+{{> documentation }}
+@javax.annotation.Generated(value = "{{generatorOpts.generatorClassName}}", date = "{{generatorOpts.generationDate}}")
+public interface {{typeName}} {
+{{#each methods}}
+    {{> requestsHandlerMethod}}
+{{/each}}
+}

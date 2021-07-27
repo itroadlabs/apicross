@@ -23,4 +23,6 @@ public class JavaCodeGeneratorOptions extends CodeGeneratorOptions {
     private Map<String, String> queryObjectsInterfacesMap = new HashMap<>();
     private Set<String> globalQueryObjectsInterfaces = new LinkedHashSet<>();
     private boolean useJsonNullable = true;
+    private Set<String> alternativeTemplatesPath = new LinkedHashSet<>();
+
 }

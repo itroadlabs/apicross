@@ -1,6 +1,5 @@
 package io.github.itroadlabs.apicross.springmvc;
 
-import io.github.itroadlabs.apicross.java.JavaCodeGenerator;
 import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
@@ -12,6 +11,7 @@ import io.github.itroadlabs.apicross.core.handler.model.MediaTypeContentModel;
 import io.github.itroadlabs.apicross.core.handler.model.RequestQueryParameter;
 import io.github.itroadlabs.apicross.core.handler.model.RequestsHandler;
 import io.github.itroadlabs.apicross.core.handler.model.RequestsHandlerMethod;
+import io.github.itroadlabs.apicross.java.JavaCodeGenerator;
 import io.github.itroadlabs.apicross.utils.HandlebarsFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +31,6 @@ public class SpringMvcCodeGenerator extends JavaCodeGenerator<SpringMvcCodeGener
     private boolean enableSpringSecurityAuthPrincipal = false;
     private boolean useQueryStringParametersObject = true;
     private String apiModelReadInterfacesPackage;
-    private List<String> alternativeTemplatesPath;
 
     @Override
     public void setOptions(SpringMvcCodeGeneratorOptions options) throws Exception {
@@ -43,7 +42,6 @@ public class SpringMvcCodeGenerator extends JavaCodeGenerator<SpringMvcCodeGener
         if (this.apiModelReadInterfacesPackage == null) {
             this.apiModelReadInterfacesPackage = super.apiModelPackage;
         }
-        this.alternativeTemplatesPath = options.getAlternativeTemplatesPath();
         this.useQueryStringParametersObject = options.isUseQueryStringParametersObject();
     }
 
@@ -120,19 +118,8 @@ public class SpringMvcCodeGenerator extends JavaCodeGenerator<SpringMvcCodeGener
     }
 
     @Override
-    protected Handlebars setupHandlebars() {
-        ClassPathTemplateLoader defaultTemplatesLoader = new ClassPathTemplateLoader("/io/github/itroadlabs/apicross/springmvc/templates", ".hbs");
-
-        if (alternativeTemplatesPath != null && !alternativeTemplatesPath.isEmpty()) {
-            List<TemplateLoader> effectiveTemplatesClassPath = new ArrayList<>();
-            for (String path : alternativeTemplatesPath) {
-                effectiveTemplatesClassPath.add(new FileTemplateLoader(path, ".hbs"));
-            }
-            effectiveTemplatesClassPath.add(defaultTemplatesLoader);
-            return HandlebarsFactory.setupHandlebars(effectiveTemplatesClassPath);
-        } else {
-            return HandlebarsFactory.setupHandlebars(Collections.singletonList(defaultTemplatesLoader));
-        }
+    protected ClassPathTemplateLoader setupDefaultTemplatesLoader() {
+        return new ClassPathTemplateLoader("/io/github/itroadlabs/apicross/springmvc/templates", ".hbs");
     }
 
     @Override

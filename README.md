@@ -83,4 +83,4 @@ APICROSS is a tool to generate source code from OpenAPI 3.0 API specification.
 | enableDataModelReadInterfaces | boolean | Enable generation for `IRead*` interfaces |
 | apiModelReadInterfacesPackage | String | Java package name for `IRead*` interfaces |
 | enableSpringSecurityAuthPrincipal | boolean | Enable for API Handlers methods Spring Security `Authorization` parameter |
-| alternativeTemplatesPath | List | TBD... |
+| alternativeTemplatesPath | List | Path to files with alternative templates. Please read about feature [here](docs/AlternativeTemplates.md) |
