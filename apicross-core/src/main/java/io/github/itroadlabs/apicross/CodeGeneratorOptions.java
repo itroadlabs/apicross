@@ -2,12 +2,14 @@ package io.github.itroadlabs.apicross;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Collections;
 import java.util.Set;
 
 @Getter
 @Setter
+@ToString
 public class CodeGeneratorOptions {
     private String writeSourcesTo;
     private boolean generateOnlyModels = false;
