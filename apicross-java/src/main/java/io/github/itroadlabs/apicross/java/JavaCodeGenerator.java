@@ -1,5 +1,13 @@
 package io.github.itroadlabs.apicross.java;
 
+import com.github.jknack.handlebars.Context;
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
+import com.github.jknack.handlebars.io.FileTemplateLoader;
+import com.github.jknack.handlebars.io.TemplateLoader;
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
 import io.github.itroadlabs.apicross.CodeGenerator;
 import io.github.itroadlabs.apicross.CodeGeneratorException;
 import io.github.itroadlabs.apicross.core.data.InlineDataModelResolver;
@@ -11,13 +19,9 @@ import io.github.itroadlabs.apicross.core.handler.RequestsHandlerMethodNameResol
 import io.github.itroadlabs.apicross.core.handler.RequestsHandlerTypeNameResolver;
 import io.github.itroadlabs.apicross.core.handler.model.RequestsHandler;
 import io.github.itroadlabs.apicross.core.handler.model.RequestsHandlerMethod;
+import io.github.itroadlabs.apicross.utils.HandlebarsFactory;
 import io.github.itroadlabs.apicross.utils.PluginsHelper;
 import io.github.itroadlabs.apicross.utils.SourceCodeLineNumberUtil;
-import com.github.jknack.handlebars.Context;
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
-import com.google.googlejavaformat.java.Formatter;
-import com.google.googlejavaformat.java.FormatterException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,6 +41,8 @@ public abstract class JavaCodeGenerator<T extends JavaCodeGeneratorOptions> exte
     protected Map<String, String> queryObjectsInterfacesMap;
     protected Set<String> globalQueryObjectsInterfaces;
     protected boolean useJsonNullable;
+    private Set<String> alternativeTemplatesPath;
+
 
     @Override
     public void setOptions(T options) throws Exception {
@@ -48,6 +54,8 @@ public abstract class JavaCodeGenerator<T extends JavaCodeGeneratorOptions> exte
         this.queryObjectsInterfacesMap = Collections.unmodifiableMap(options.getQueryObjectsInterfacesMap());
         this.globalQueryObjectsInterfaces = Collections.unmodifiableSet(options.getGlobalQueryObjectsInterfaces());
         this.useJsonNullable = options.isUseJsonNullable();
+        this.alternativeTemplatesPath = Collections.unmodifiableSet(options.getAlternativeTemplatesPath());
+
     }
 
     @Override
@@ -71,7 +79,7 @@ public abstract class JavaCodeGenerator<T extends JavaCodeGeneratorOptions> exte
         }
 
         log.info("Setup source code templates...");
-        Handlebars handlebars = setupHandlebars();
+        Handlebars handlebars = setupHandlebarsTemplates();
         initSourceCodeTemplates(handlebars);
 
         log.info("Writing sources...");
@@ -225,7 +233,26 @@ public abstract class JavaCodeGenerator<T extends JavaCodeGeneratorOptions> exte
                 DefaultPropertyAndParameterNameResolver::new);
     }
 
-    protected abstract Handlebars setupHandlebars();
+    protected Handlebars setupHandlebarsTemplates() {
+        ClassPathTemplateLoader defaultTemplatesLoader = setupDefaultTemplatesLoader();
+
+        if (alternativeTemplatesPath != null && !alternativeTemplatesPath.isEmpty()) {
+            List<TemplateLoader> effectiveTemplatesClassPath = new ArrayList<>();
+            for (String path : alternativeTemplatesPath) {
+                if (path.startsWith("classpath:")) {
+                    effectiveTemplatesClassPath.add(new ClassPathTemplateLoader(path.substring(10), ".hbs"));
+                } else {
+                    effectiveTemplatesClassPath.add(new FileTemplateLoader(path, ".hbs"));
+                }
+            }
+            effectiveTemplatesClassPath.add(defaultTemplatesLoader);
+            return HandlebarsFactory.setupHandlebars(effectiveTemplatesClassPath);
+        } else {
+            return HandlebarsFactory.setupHandlebars(Collections.singletonList(defaultTemplatesLoader));
+        }
+    }
+
+    protected abstract ClassPathTemplateLoader setupDefaultTemplatesLoader();
 
     protected void initSourceCodeTemplates(Handlebars templatesEngine) throws IOException {
         this.requestsHandlerSourceCodeTemplate = templatesEngine.compile("requestsHandler");

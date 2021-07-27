@@ -139,6 +139,7 @@
                                 </generateOnlyTags>
                                 <alternativeTemplatesPath>
                                     <item>${project.basedir}/src/main/resources/apicross/demoapp/storefront/alternative_templates</item>
+                                    <item>classpath:/apicross/demoapp/codegenext/alternative_templates</item>
                                 </alternativeTemplatesPath>
                             </generatorOptions>
                         </configuration>
