@@ -1,22 +1,27 @@
 package io.github.itroadlabs.apicross.core.handler.impl;
 
-import io.github.itroadlabs.apicross.core.data.model.DataModel;
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import io.github.itroadlabs.apicross.core.data.DataModelResolver;
+import io.github.itroadlabs.apicross.core.data.model.DataModel;
 import io.github.itroadlabs.apicross.core.handler.ParameterNameResolver;
 import io.github.itroadlabs.apicross.core.handler.RequestsHandlerMethodNameResolver;
 import io.github.itroadlabs.apicross.core.handler.RequestsHandlerMethodsResolver;
 import io.github.itroadlabs.apicross.core.handler.model.*;
 import io.github.itroadlabs.apicross.utils.OpenApiComponentsIndex;
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
+import io.github.itroadlabs.apicross.utils.SchemaHelper;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -93,9 +98,14 @@ public class DefaultRequestsHandlerMethodsResolver implements RequestsHandlerMet
     }
 
     private MediaTypeContentModel resolveContentModel(Schema<?> contentSchema, String mediaType) {
-        Preconditions.checkArgument(contentSchema.get$ref() != null, "contentSchema doesn't have $ref: " + contentSchema);
-        DataModel dataModel = dataModelResolver.resolve(contentSchema);
-        return new MediaTypeContentModel(dataModel, mediaType);
+        if (SchemaHelper.isPrimitiveTypeSchema(contentSchema) || (contentSchema instanceof ArraySchema)) {
+            DataModel dataModel = dataModelResolver.resolve(contentSchema);
+            return new MediaTypeContentModel(dataModel, mediaType);
+        } else {
+            Preconditions.checkArgument(contentSchema.get$ref() != null, "contentSchema doesn't have $ref: " + contentSchema);
+            DataModel dataModel = dataModelResolver.resolve(contentSchema);
+            return new MediaTypeContentModel(dataModel, mediaType);
+        }
     }
 
     private List<RequestQueryParameter> resolveQueryStringParameters(List<Parameter> parameters, ParameterNameResolver parameterNameResolver) {
