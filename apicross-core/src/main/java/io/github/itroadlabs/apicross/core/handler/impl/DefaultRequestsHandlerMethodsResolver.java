@@ -2,7 +2,9 @@ package io.github.itroadlabs.apicross.core.handler.impl;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import io.github.itroadlabs.apicross.CodeGeneratorException;
 import io.github.itroadlabs.apicross.core.data.DataModelResolver;
+import io.github.itroadlabs.apicross.core.data.model.ArrayDataModel;
 import io.github.itroadlabs.apicross.core.data.model.DataModel;
 import io.github.itroadlabs.apicross.core.handler.ParameterNameResolver;
 import io.github.itroadlabs.apicross.core.handler.RequestsHandlerMethodNameResolver;
@@ -100,9 +102,15 @@ public class DefaultRequestsHandlerMethodsResolver implements RequestsHandlerMet
     private MediaTypeContentModel resolveContentModel(Schema<?> contentSchema, String mediaType) {
         if (SchemaHelper.isPrimitiveTypeSchema(contentSchema) || (contentSchema instanceof ArraySchema)) {
             DataModel dataModel = dataModelResolver.resolve(contentSchema);
+            if ((dataModel instanceof ArrayDataModel) && ((ArrayDataModel) dataModel).getItemsDataModel().isObject()) {
+                // TODO: it is possible to implement more intelligent handling, for example introduce special method into InlineDataModelResolver to resolve such cases
+                throw new CodeGeneratorException("Unable to resolve requestBody/responseBody content model - feature is not supported. " +
+                        "Use array type with primitive items or items definition through $ref. Content schema: " + contentSchema.toString());
+            }
             return new MediaTypeContentModel(dataModel, mediaType);
         } else {
-            Preconditions.checkArgument(contentSchema.get$ref() != null, "contentSchema doesn't have $ref: " + contentSchema);
+            Preconditions.checkArgument(contentSchema.get$ref() != null, "Unable to resolve requestBody/responseBody content model - feature is not supported. " +
+                    "Content schema doesn't have $ref. Content schema: " + contentSchema.toString());
             DataModel dataModel = dataModelResolver.resolve(contentSchema);
             return new MediaTypeContentModel(dataModel, mediaType);
         }
