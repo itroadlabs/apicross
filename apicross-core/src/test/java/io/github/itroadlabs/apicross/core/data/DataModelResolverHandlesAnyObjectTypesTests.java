@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DataModelResolverHandlesAnyObjectTypesTests extends DataModelSchemaResolverTestsBase {
     @BeforeEach
     public void setup() throws IOException {
-        init("DataModelSchemaResolverTest.anyObjectLikeSchemaResolved.yaml");
+        init("DataModelResolverHandlesAnyObjectTypesTests.yaml");
     }
 
     @Test

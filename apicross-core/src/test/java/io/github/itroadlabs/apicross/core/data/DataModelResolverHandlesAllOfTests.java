@@ -5,6 +5,7 @@ import io.github.itroadlabs.apicross.core.data.model.ObjectDataModel;
 import io.github.itroadlabs.apicross.core.data.model.ObjectDataModelProperty;
 import io.github.itroadlabs.apicross.core.data.model.PrimitiveDataModel;
 import io.swagger.v3.oas.models.media.Schema;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,9 +14,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverTestsBase {
+    @BeforeEach
+    public void setup() throws IOException {
+        init("DataModelResolverHandlesAllOfTests.yaml");
+    }
+
     @Test
-    public void allOfSchemaTypeResolved() throws IOException {
-        init("DataModelSchemaResolverTest.allOfSchemaTypeResolved.yaml");
+    public void allOfSchemaTypeResolved() {
         Schema<?> schema = openAPIComponentsIndex.schemaByName("AllOfSchemaType");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
@@ -27,8 +32,7 @@ public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverT
     }
 
     @Test
-    public void allOfSchemaTypeResolved_withConstraints() throws IOException {
-        init("DataModelSchemaResolverTest.allOfSchemaTypeResolved.yaml");
+    public void allOfSchemaTypeResolved_withConstraints() {
         Schema<?> schema = openAPIComponentsIndex.schemaByName("AllOfSchemaTypeOnlyConstraints");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
@@ -41,8 +45,7 @@ public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverT
     }
 
     @Test
-    public void allOfInFieldWithOnlyExampleIsTreatedAsSimpleRef() throws IOException {
-        init("DataModelSchemaResolverTest.allOfSchemaTypeResolved.yaml");
+    public void allOfInFieldWithOnlyExampleIsTreatedAsSimpleRef() {
         Schema<?> schema = openAPIComponentsIndex.schemaByName("AllOfInField1");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
@@ -51,8 +54,7 @@ public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverT
     }
 
     @Test
-    public void allOfInFieldWithOnlyDescriptionIsTreatedAsSimpleRef() throws IOException {
-        init("DataModelSchemaResolverTest.allOfSchemaTypeResolved.yaml");
+    public void allOfInFieldWithOnlyDescriptionIsTreatedAsSimpleRef() {
         Schema<?> schema = openAPIComponentsIndex.schemaByName("AllOfInField2");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
@@ -61,8 +63,7 @@ public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverT
     }
 
     @Test
-    public void allOfInFieldWithConstraints() throws IOException {
-        init("DataModelSchemaResolverTest.allOfSchemaTypeResolved.yaml");
+    public void allOfInFieldWithConstraints() {
         Schema<?> schema = openAPIComponentsIndex.schemaByName("AllOfInField3");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);

@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DataModelResolverHandlesSimpleCasesTests extends DataModelSchemaResolverTestsBase {
     @Test
     public void primitiveTypeResolved() throws IOException {
-        init("DataModelSchemaResolverTest.primitiveTypeResolved.yaml");
+        init("DataModelResolverHandlesSimpleCasesTests.primitiveTypeResolved.yaml");
 
         Schema<?> schema = openAPIComponentsIndex.schemaByName("StringType");
 
@@ -30,7 +30,7 @@ public class DataModelResolverHandlesSimpleCasesTests extends DataModelSchemaRes
 
     @Test
     public void simpleObjectResolved() throws IOException {
-        init("DataModelSchemaResolverTest.simpleObjectResolved.yaml");
+        init("DataModelResolverHandlesSimpleCasesTests.simpleObjectResolved.yaml");
         Schema<?> schema = openAPIComponentsIndex.schemaByName("SimpleObject");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
@@ -54,7 +54,7 @@ public class DataModelResolverHandlesSimpleCasesTests extends DataModelSchemaRes
 
     @Test
     public void objectWithRefsResolved() throws IOException {
-        init("DataModelSchemaResolverTest.objectWithRefsResolved.yaml");
+        init("DataModelResolverHandlesSimpleCasesTests.objectWithRefsResolved.yaml");
         Schema<?> schema = openAPIComponentsIndex.schemaByName("ObjectWithRefs");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
@@ -73,7 +73,7 @@ public class DataModelResolverHandlesSimpleCasesTests extends DataModelSchemaRes
 
     @Test
     public void objectWithRefOntoArrayTypeResolved() throws IOException {
-        init("DataModelSchemaResolverTest.objectWithRefOntoArrayTypeResolved.yaml");
+        init("DataModelResolverHandlesSimpleCasesTests.objectWithRefOntoArrayTypeResolved.yaml");
         Schema<?> schema = openAPIComponentsIndex.schemaByName("ObjectWithRefOntoArrayType");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
@@ -88,7 +88,7 @@ public class DataModelResolverHandlesSimpleCasesTests extends DataModelSchemaRes
 
     @Test
     public void propertyDescriptionDelegatedFormReferencedSchema() throws IOException {
-        init("DataModelSchemaResolverTest.propertyDescriptionDelegatedFormReferencedSchema.yaml");
+        init("DataModelResolverHandlesSimpleCasesTests.propertyDescriptionDelegatedFormReferencedSchema.yaml");
         Schema<?> schema = openAPIComponentsIndex.schemaByName("TestSchema");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
