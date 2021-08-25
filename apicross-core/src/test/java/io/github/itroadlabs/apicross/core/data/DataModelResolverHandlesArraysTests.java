@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DataModelResolverHandlesArraysTests extends DataModelSchemaResolverTestsBase {
     @Test
     public void simpleArrayResolved() throws IOException {
-        init("DataModelSchemaResolverTest.simpleArrayResolved.yaml");
+        init("DataModelResolverHandlesArraysTests.simpleArrayResolved.yaml");
         Schema<?> schema = openAPIComponentsIndex.schemaByName("SimpleArray");
 
         ArrayDataModel resolvedSchema = (ArrayDataModel) resolver.resolve(schema);
@@ -25,7 +25,7 @@ public class DataModelResolverHandlesArraysTests extends DataModelSchemaResolver
 
     @Test
     public void arrayWithRefOntoPrimitiveTypeResolved() throws IOException {
-        init("DataModelSchemaResolverTest.arrayWithRefOntoPrimitiveTypeResolved.yaml");
+        init("DataModelResolverHandlesArraysTests.arrayWithRefOntoPrimitiveTypeResolved.yaml");
         Schema<?> schema = openAPIComponentsIndex.schemaByName("ArrayWithRefOntoPrimitiveType");
 
         ArrayDataModel resolvedSchema = (ArrayDataModel) resolver.resolve(schema);
@@ -36,7 +36,7 @@ public class DataModelResolverHandlesArraysTests extends DataModelSchemaResolver
 
     @Test
     public void arrayWithRefOntoObjectTypeResolved() throws IOException {
-        init("DataModelSchemaResolverTest.arrayWithRefOntoObjectTypeResolved.yaml");
+        init("DataModelResolverHandlesArraysTests.arrayWithRefOntoObjectTypeResolved.yaml");
         Schema<?> schema = openAPIComponentsIndex.schemaByName("ArrayWithRefOntoObjectType");
 
         ArrayDataModel resolvedSchema = (ArrayDataModel) resolver.resolve(schema);
@@ -47,7 +47,7 @@ public class DataModelResolverHandlesArraysTests extends DataModelSchemaResolver
 
     @Test
     public void arrayConstraintsResolved() throws IOException {
-        init("DataModelSchemaResolverTest.arrayConstraintsResolved.yaml");
+        init("DataModelResolverHandlesArraysTests.arrayConstraintsResolved.yaml");
 
         // 1)
         Schema<?> schema = openAPIComponentsIndex.schemaByName("ArrayWithRefOntoSimpleType");

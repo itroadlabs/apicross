@@ -2,6 +2,7 @@ package io.github.itroadlabs.apicross.core.data;
 
 import io.github.itroadlabs.apicross.core.data.model.ObjectDataModel;
 import io.swagger.v3.oas.models.media.Schema;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -14,9 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 public class DataModelResolverHandlesInlineModelsTests extends DataModelSchemaResolverTestsBase {
+    @BeforeEach
+    public void setup() throws IOException {
+        init("DataModelResolverHandlesInlineModelsTests.yaml");
+    }
+
     @Test
-    public void inlineModelResolved1() throws IOException {
-        init("DataModelSchemaResolverTest.inlineModelsResolved.yaml");
+    public void inlineModelResolved1() {
         Schema<?> schema = openAPIComponentsIndex.schemaByName("Model1");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
@@ -31,8 +36,7 @@ public class DataModelResolverHandlesInlineModelsTests extends DataModelSchemaRe
     }
 
     @Test
-    public void inlineModelResolved_stack() throws IOException {
-        init("DataModelSchemaResolverTest.inlineModelsResolved.yaml");
+    public void inlineModelResolved_stack() {
         Schema<?> schema = openAPIComponentsIndex.schemaByName("Model3");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
@@ -46,8 +50,7 @@ public class DataModelResolverHandlesInlineModelsTests extends DataModelSchemaRe
     }
 
     @Test
-    public void inlineModelResolved_additionalProperties() throws IOException {
-        init("DataModelSchemaResolverTest.inlineModelsResolved.yaml");
+    public void inlineModelResolved_additionalProperties() {
         Schema<?> schema = openAPIComponentsIndex.schemaByName("Model4");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
@@ -59,8 +62,7 @@ public class DataModelResolverHandlesInlineModelsTests extends DataModelSchemaRe
     }
 
     @Test
-    public void inlineModelResolved_array() throws IOException {
-        init("DataModelSchemaResolverTest.inlineModelsResolved.yaml");
+    public void inlineModelResolved_array() {
         Schema<?> schema = openAPIComponentsIndex.schemaByName("Model5");
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
