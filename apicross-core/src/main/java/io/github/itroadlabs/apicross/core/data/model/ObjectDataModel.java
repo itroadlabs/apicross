@@ -2,9 +2,11 @@ package io.github.itroadlabs.apicross.core.data.model;
 
 import io.github.itroadlabs.apicross.core.NamedDatum;
 import io.swagger.v3.oas.models.media.Schema;
+import lombok.NonNull;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ObjectDataModel extends DataModel {
     private String typeName;
@@ -14,7 +16,6 @@ public class ObjectDataModel extends DataModel {
     private String inheritanceDiscriminatorPropertyName;
     private ObjectDataModel inheritanceParent;
     private String inheritanceDiscriminatorValue;
-    private Set<String> propertiesOriginSchemasNames;
     private DataModel additionalPropertiesDataModel;
 
     ObjectDataModel(String typeName, Schema<?> source) {
@@ -40,15 +41,11 @@ public class ObjectDataModel extends DataModel {
                     mapping.getOrDefault(childModel.typeName, childModel.typeName) : childModel.typeName;
         }
 
-        // Some properties from child schemas might be declared in the same schemas.
-        // For example SchemaA is a AllOf(SchemaX and something else), SchemaB is AllOf(SchemaX and something else),
-        // so when SchemaA and SchemaB is child data models for this model, so their common properties can be moved to this data model
-
-        Set<String> originSchemasNamesForCommonProperties = collectCommonPropertiesOriginSchemasNames();
+        Set<SchemaWithPropertyName> commonProperties = commonProperties(childModels.values());
 
         List<ObjectDataModelProperty> collectedCommonProperties = new ArrayList<>();
         for (ObjectDataModel childModel : this.inheritanceChildModels.values()) {
-            List<ObjectDataModelProperty> propsToBeMovedToParent = childModel.removePropertiesForOriginSources(originSchemasNamesForCommonProperties);
+            List<ObjectDataModelProperty> propsToBeMovedToParent = childModel.removePropertiesFor(commonProperties);
             propsToBeMovedToParent.removeIf(property -> property.getName().equals(this.inheritanceDiscriminatorPropertyName));
             childModel.removeRequiredProperty(this.inheritanceDiscriminatorPropertyName);
             collectedCommonProperties.addAll(propsToBeMovedToParent);
@@ -56,32 +53,70 @@ public class ObjectDataModel extends DataModel {
         this.initPropertiesFrom(collectedCommonProperties); // TODO: here in the collectedCommonProperties might be duplicates, but they are avoid in the initPropertiesFrom(), and it's not clear :(
     }
 
-    private Set<String> collectCommonPropertiesOriginSchemasNames() {
-        Set<String> commonSchemasNames = new HashSet<>();
-
-        for (ObjectDataModel childSchema : this.inheritanceChildModels.values()) {
-            commonSchemasNames.addAll(childSchema.propertiesOriginSchemasNames);
+    static Set<SchemaWithPropertyName> commonProperties(Collection<ObjectDataModel> models) {
+        List<Collection<SchemaWithPropertyName>> list = new ArrayList<>();
+        for (ObjectDataModel model : models) {
+            list.add(model.getProperties().stream()
+                    .map(objectDataModelProperty ->
+                            new SchemaWithPropertyName(objectDataModelProperty.getName(), objectDataModelProperty.getType().getSource()))
+                    .collect(Collectors.toList()));
         }
-        for (ObjectDataModel childSchema : this.inheritanceChildModels.values()) {
-            commonSchemasNames.retainAll(childSchema.propertiesOriginSchemasNames);
-        }
-        commonSchemasNames.removeIf(Objects::isNull);
-        return commonSchemasNames;
+        return findIntersection(new HashSet<>(), list);
     }
 
-    private List<ObjectDataModelProperty> removePropertiesForOriginSources(Set<String> originSchemasNames) {
-        List<ObjectDataModelProperty> propsToBeRemoved = new ArrayList<>();
-        List<ObjectDataModelProperty> propsToBeLeft = new ArrayList<>();
-        for (ObjectDataModelProperty property : propertiesMap.values()) {
-            String originSchemaName = property.getOriginSchemaName();
-            if ((originSchemaName != null) && originSchemasNames.contains(originSchemaName)) {
-                propsToBeRemoved.add(property);
+    static <T, C extends Collection<T>> C findIntersection(C newCollection, List<Collection<T>> collections) {
+        boolean first = true;
+        for (Collection<T> collection : collections) {
+            if (first) {
+                newCollection.addAll(collection);
+                first = false;
             } else {
-                propsToBeLeft.add(property);
+                newCollection.retainAll(collection);
             }
         }
-        propertiesMap.clear();
-        initPropertiesFrom(propsToBeLeft);
+        return newCollection;
+    }
+
+    static class SchemaWithPropertyName {
+        private final String propertyName;
+        private final Schema<?> schema;
+
+        public SchemaWithPropertyName(@NonNull String propertyName, @NonNull Schema<?> schema) {
+            this.propertyName = propertyName;
+            this.schema = schema;
+        }
+
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        public Schema<?> getSchema() {
+            return schema;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            SchemaWithPropertyName that = (SchemaWithPropertyName) o;
+            return propertyName.equals(that.propertyName) && schema.equals(that.schema);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(propertyName, schema);
+        }
+    }
+
+    private List<ObjectDataModelProperty> removePropertiesFor(Set<SchemaWithPropertyName> source) {
+        List<ObjectDataModelProperty> propsToBeRemoved = new ArrayList<>();
+        for (SchemaWithPropertyName schemaWithPropertyName : source) {
+            ObjectDataModelProperty property = this.propertiesMap.get(schemaWithPropertyName.getPropertyName());
+            if (property != null && property.getType().getSource().equals(schemaWithPropertyName.getSchema())) {
+                propsToBeRemoved.add(property);
+                this.propertiesMap.remove(property.getName());
+            }
+        }
         return propsToBeRemoved;
     }
 
@@ -101,14 +136,9 @@ public class ObjectDataModel extends DataModel {
     }
 
     private void initPropertiesFrom(Collection<ObjectDataModelProperty> properties) {
-        Set<String> schemasNames = new HashSet<>();
         for (ObjectDataModelProperty property : properties) {
             propertiesMap.put(property.getName(), property);
-            String originSchemaName = property.getOriginSchemaName();
-            schemasNames.add(originSchemaName);
         }
-        schemasNames.removeIf(Objects::isNull);
-        this.propertiesOriginSchemasNames = Collections.unmodifiableSet(schemasNames);
     }
 
     public Set<ObjectDataModelProperty> getProperties() {
