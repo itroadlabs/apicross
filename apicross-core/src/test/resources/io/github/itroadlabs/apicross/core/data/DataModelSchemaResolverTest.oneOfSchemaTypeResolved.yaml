@@ -5,6 +5,51 @@ info:
 paths: {}
 components:
   schemas:
+    SimpleOneOfSchemaType:
+      oneOf:
+        - $ref: '#/components/schemas/SimpleOneOfSchemaTypePart1'
+        - $ref: '#/components/schemas/SimpleOneOfSchemaTypePart2'
+      discriminator:
+        propertyName: type
+
+    SimpleOneOfSchemaTypePart1:
+      type: object
+      properties:
+        type:
+          type: string
+        commonProperty1:
+          type: string
+        commonProperty2:
+          type: string
+        a:
+          type: string
+        b:
+          type: string
+        z:
+          type: string
+      required:
+        - type
+        - commonProperty1
+
+    SimpleOneOfSchemaTypePart2:
+      type: object
+      properties:
+        type:
+          type: string
+        commonProperty1:
+          type: string
+        commonProperty2:
+          type: string
+        c:
+          type: array
+          items:
+            type: string
+        z:
+          type: integer
+      required:
+        - type
+        - commonProperty1
+
     OneOfSchemaType:
       oneOf:
         - $ref: '#/components/schemas/OneOfSchemaTypePart1'
@@ -12,7 +57,7 @@ components:
       discriminator:
         propertyName: type
 
-    OneOfSchemaTypeWithMaping:
+    OneOfSchemaTypeWithMapping:
       oneOf:
         - $ref: '#/components/schemas/OneOfSchemaTypePart1'
         - $ref: '#/components/schemas/OneOfSchemaTypePart2'
@@ -59,6 +104,4 @@ components:
               type: array
               items:
                 type: string
-
-
 

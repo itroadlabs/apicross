@@ -100,7 +100,7 @@ public class StorefrontMicroserviceTests {
                 .andExpect(status().is(400));
 
         mockMvc.perform(post("/sf/works/{workId}/votes", "1234")
-                .contentType("application/vnd.demoapp.v1+json").content("{\"@type\":\"VtVoteRequest\",\"points\":6}"))
+                .contentType("application/vnd.demoapp.v1+json").content("{\"@type\":\"Unknown\",\"points\":6}"))
                 .andExpect(status().is(400));
     }
 
