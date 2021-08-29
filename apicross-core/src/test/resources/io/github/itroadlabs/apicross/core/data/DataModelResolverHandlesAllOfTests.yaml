@@ -71,3 +71,38 @@ components:
             - $ref: '#/components/schemas/String100Type'
             - nullable: true
               minLength: 10
+
+    ProductProperties:
+      type: object
+      properties:
+        sku:
+          type: string
+        product_name:
+          type: string
+        product_description:
+          type: string
+        bar_codes_gs1:
+          type: array
+          items:
+            type: string
+        category_ref:
+          type: string
+        price:
+          type: number
+          format: float
+
+    CatalogProductCreate:
+      allOf:
+        - $ref: '#/components/schemas/ProductProperties'
+        - type: object
+          required:
+            - sku
+            - product_name
+            - category_ref
+            - price
+
+    CatalogProductPatch:
+      allOf:
+        - $ref: '#/components/schemas/ProductProperties'
+        - type: object
+          minProperties: 1

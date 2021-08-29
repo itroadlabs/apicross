@@ -151,14 +151,33 @@ public class ObjectDataModel extends DataModel {
     }
 
     public Integer getMinProperties() {
+        // TODO: this is not correct in case when model constructed from multiple sources in allOf construction with mixin
+        //  for example:
+        //  MyModel:
+        //      allOf:
+        //      - $ref: ...
+        //      - minProperties: 10
         return getSource().getMinProperties();
     }
 
     public Integer getMaxProperties() {
+        // TODO: this is not correct in case when model constructed from multiple sources in allOf construction with mixin
+        //  for example:
+        //  MyModel:
+        //      allOf:
+        //      - $ref: ...
+        //      - maxProperties: 10
         return getSource().getMaxProperties();
     }
 
     public List<String> getRequiredProperties() {
+        // TODO: this is not correct in case when model constructed from multiple sources in allOf construction with mixin
+        //  for example:
+        //  MyModel:
+        //      allOf:
+        //      - $ref: ...
+        //      - required:
+        //        ...
         return getSource().getRequired();
     }
 

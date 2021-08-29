@@ -9,6 +9,8 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class DataModelResolver {
@@ -150,7 +152,7 @@ public class DataModelResolver {
                     requiredProperties.addAll(partSchema.getRequired());
                 }
 
-                allProperties.addAll(objectDataModel.getProperties());
+                allProperties.addAll(objectDataModel.getProperties().stream().map(ObjectDataModelProperty::copy).collect(Collectors.toList()));
             }
 
             if (partTypeSchema instanceof PrimitiveDataModel) {
