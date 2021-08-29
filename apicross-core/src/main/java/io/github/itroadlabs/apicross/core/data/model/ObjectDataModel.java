@@ -171,14 +171,10 @@ public class ObjectDataModel extends DataModel {
     }
 
     public List<String> getRequiredProperties() {
-        // TODO: this is not correct in case when model constructed from multiple sources in allOf construction with mixin
-        //  for example:
-        //  MyModel:
-        //      allOf:
-        //      - $ref: ...
-        //      - required:
-        //        ...
-        return getSource().getRequired();
+        return this.getProperties().stream()
+                .filter(NamedDatum::isRequired)
+                .map(NamedDatum::getName)
+                .collect(Collectors.toList());
     }
 
     public void removeRequiredProperty(String propertyName) {
