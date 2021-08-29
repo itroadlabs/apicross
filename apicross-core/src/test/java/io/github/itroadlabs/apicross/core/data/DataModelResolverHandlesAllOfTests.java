@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverTestsBase {
     @BeforeEach
@@ -75,5 +75,26 @@ public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverT
         PrimitiveDataModel primitiveDataModel = (PrimitiveDataModel) propertyType;
         assertEquals(100, primitiveDataModel.getMaxLength().intValue());
         assertEquals(10, primitiveDataModel.getMinLength().intValue());
+    }
+
+    @Test
+    void allOfWithCommonSchemaResolved() {
+        Schema<?> createSchema = openAPIComponentsIndex.schemaByName("CatalogProductCreate");
+        Schema<?> patchSchema = openAPIComponentsIndex.schemaByName("CatalogProductPatch");
+        ObjectDataModel createModel = (ObjectDataModel) resolver.resolve(createSchema);
+        assertTrue(createModel.getProperty("sku").isRequired());
+        assertTrue(createModel.getProperty("product_name").isRequired());
+        assertTrue(createModel.getProperty("category_ref").isRequired());
+        assertTrue(createModel.getProperty("price").isRequired());
+        assertFalse(createModel.getProperty("product_description").isRequired());
+        assertFalse(createModel.getProperty("bar_codes_gs1").isRequired());
+
+        ObjectDataModel patchModel = (ObjectDataModel) resolver.resolve(patchSchema);
+        assertFalse(patchModel.getProperty("sku").isRequired());
+        assertFalse(patchModel.getProperty("product_name").isRequired());
+        assertFalse(patchModel.getProperty("category_ref").isRequired());
+        assertFalse(patchModel.getProperty("price").isRequired());
+        assertFalse(patchModel.getProperty("product_description").isRequired());
+        assertFalse(patchModel.getProperty("bar_codes_gs1").isRequired());
     }
 }
