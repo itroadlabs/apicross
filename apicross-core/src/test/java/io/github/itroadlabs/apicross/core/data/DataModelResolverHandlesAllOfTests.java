@@ -9,9 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverTestsBase {
     @BeforeEach
@@ -28,7 +28,7 @@ public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverT
         assertEquals(4, resolvedSchema.getProperties().size());
         assertTrue(((PrimitiveDataModel) resolvedSchema.getProperty("a").getType()).isString());
         assertTrue(((PrimitiveDataModel) resolvedSchema.getProperty("b").getType()).isString());
-        assertEquals("AllOfSchemaTypePart1", ((ObjectDataModel)resolvedSchema.getProperty("d").getType()).getTypeName());
+        assertEquals("AllOfSchemaTypePart1", ((ObjectDataModel) resolvedSchema.getProperty("d").getType()).getTypeName());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverT
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
         assertEquals(1, resolvedSchema.getProperties().size());
-        assertEquals("AllOfSchemaTypePart1", ((ObjectDataModel)resolvedSchema.getProperty("c").getType()).getTypeName());
+        assertEquals("AllOfSchemaTypePart1", ((ObjectDataModel) resolvedSchema.getProperty("c").getType()).getTypeName());
     }
 
     @Test
@@ -59,7 +59,7 @@ public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverT
 
         ObjectDataModel resolvedSchema = (ObjectDataModel) resolver.resolve(schema);
         assertEquals(1, resolvedSchema.getProperties().size());
-        assertEquals("AllOfSchemaTypePart1", ((ObjectDataModel)resolvedSchema.getProperty("c").getType()).getTypeName());
+        assertEquals("AllOfSchemaTypePart1", ((ObjectDataModel) resolvedSchema.getProperty("c").getType()).getTypeName());
     }
 
     @Test
@@ -88,6 +88,8 @@ public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverT
         assertTrue(createModel.getProperty("price").isRequired());
         assertFalse(createModel.getProperty("product_description").isRequired());
         assertFalse(createModel.getProperty("bar_codes_gs1").isRequired());
+        assertTrue(createModel.getRequiredProperties().containsAll(Arrays.asList("sku", "product_name",
+                "category_ref", "price")));
 
         ObjectDataModel patchModel = (ObjectDataModel) resolver.resolve(patchSchema);
         assertFalse(patchModel.getProperty("sku").isRequired());
@@ -96,5 +98,6 @@ public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverT
         assertFalse(patchModel.getProperty("price").isRequired());
         assertFalse(patchModel.getProperty("product_description").isRequired());
         assertFalse(patchModel.getProperty("bar_codes_gs1").isRequired());
+        assertTrue(patchModel.getRequiredProperties().isEmpty());
     }
 }
