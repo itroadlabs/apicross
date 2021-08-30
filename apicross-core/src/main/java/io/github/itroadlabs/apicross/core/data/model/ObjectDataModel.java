@@ -170,11 +170,11 @@ public class ObjectDataModel extends DataModel {
         return getSource().getMaxProperties();
     }
 
-    public List<String> getRequiredProperties() {
+    public Set<String> getRequiredProperties() {
         return this.getProperties().stream()
                 .filter(NamedDatum::isRequired)
                 .map(NamedDatum::getName)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     public void removeRequiredProperty(String propertyName) {
