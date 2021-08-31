@@ -9,7 +9,6 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -142,6 +141,9 @@ public class DataModelResolver {
         Schema<?> anonymousPart = null;
         String description = null;
 
+        Integer minProperties = null;
+        Integer maxProperties = null;
+
         for (Schema<?> partSchema : partsSchemas) {
             DataModel partTypeSchema = resolveMayBe$ref(partSchema);
             if (partTypeSchema.isObject()) {
@@ -150,6 +152,26 @@ public class DataModelResolver {
 
                 if (partSchema.getRequired() != null) {
                     requiredProperties.addAll(partSchema.getRequired());
+                }
+
+                if (partSchema.getMinProperties() != null) {
+                    if (minProperties != null) {
+                        if (minProperties > partSchema.getMinProperties()) {
+                            minProperties = partSchema.getMinProperties();
+                        }
+                    } else {
+                        minProperties = partSchema.getMinProperties();
+                    }
+                }
+
+                if (partSchema.getMaxProperties() != null) {
+                    if (maxProperties != null) {
+                        if (maxProperties < partSchema.getMaxProperties()) {
+                            maxProperties = partSchema.getMaxProperties();
+                        }
+                    } else {
+                        maxProperties = partSchema.getMaxProperties();
+                    }
                 }
 
                 allProperties.addAll(objectDataModel.getProperties().stream().map(ObjectDataModelProperty::copy).collect(Collectors.toList()));
@@ -198,6 +220,14 @@ public class DataModelResolver {
 
         if (description != null) {
             schema.setDescription(description);
+        }
+
+        if (minProperties != null) {
+            schema.setMinProperties(minProperties);
+        }
+
+        if (maxProperties != null) {
+            schema.setMaxProperties(maxProperties);
         }
 
         return DataModel.newObjectDataModel(schema, schema.getName(), allProperties, null);
