@@ -99,5 +99,6 @@ public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverT
         assertFalse(patchModel.getProperty("product_description").isRequired());
         assertFalse(patchModel.getProperty("bar_codes_gs1").isRequired());
         assertTrue(patchModel.getRequiredProperties().isEmpty());
+        assertEquals(1, patchModel.getMinProperties());
     }
 }
