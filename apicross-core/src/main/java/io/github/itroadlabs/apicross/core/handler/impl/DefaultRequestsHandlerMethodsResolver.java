@@ -15,6 +15,8 @@ import io.github.itroadlabs.apicross.utils.SchemaHelper;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import org.apache.commons.lang3.BooleanUtils;
@@ -120,15 +122,32 @@ public class DefaultRequestsHandlerMethodsResolver implements RequestsHandlerMet
         return parametersOf("query", parameters)
                 .map((Function<Parameter, RequestQueryParameter>) parameter -> {
                     Preconditions.checkArgument(parameter != null);
-                    DataModel dataModel = dataModelResolver.resolve(parameter.getSchema());
-                    String resolvedName = parameterNameResolver.resolveParameterName(parameter.getSchema(), parameter.getName());
-                    return new RequestQueryParameter(
-                            parameter.getName(),
-                            resolvedName,
-                            parameter.getDescription(),
-                            dataModel,
-                            BooleanUtils.isTrue(parameter.getRequired()),
-                            BooleanUtils.isTrue(parameter.getDeprecated()));
+                    Content content = parameter.getContent();
+                    if (content != null) {
+                        MediaType mediaType = content.get("application/json");
+                        if (mediaType == null) {
+                            throw new CodeGeneratorException("Only 'application/json' content encoding supported for query parameters so far");
+                        }
+                        DataModel dataModel = dataModelResolver.resolve(mediaType.getSchema());
+                        String resolvedName = parameterNameResolver.resolveParameterName(parameter.getSchema(), parameter.getName());
+                        return new RequestQueryParameter(
+                                parameter.getName(),
+                                resolvedName,
+                                parameter.getDescription(),
+                                dataModel,
+                                BooleanUtils.isTrue(parameter.getRequired()),
+                                BooleanUtils.isTrue(parameter.getDeprecated()), true);
+                    } else {
+                        DataModel dataModel = dataModelResolver.resolve(parameter.getSchema());
+                        String resolvedName = parameterNameResolver.resolveParameterName(parameter.getSchema(), parameter.getName());
+                        return new RequestQueryParameter(
+                                parameter.getName(),
+                                resolvedName,
+                                parameter.getDescription(),
+                                dataModel,
+                                BooleanUtils.isTrue(parameter.getRequired()),
+                                BooleanUtils.isTrue(parameter.getDeprecated()));
+                    }
                 })
                 .collect(Collectors.toList());
     }
