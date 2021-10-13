@@ -3,11 +3,13 @@
      @RequestParam(
                   name="{{{../name}}}",
                   required={{../required}}
-                  {{#if defaultValue}}
-                      {{#if primitive}}
-                          , defaultValue = "{{{defaultValue}}}"
+                  {{#unless ../required}}
+                      {{#if defaultValue}}
+                          {{#if primitive}}
+                              , defaultValue = "{{{defaultValue}}}"
+                          {{/if}}
                       {{/if}}
-                  {{/if}}
+                  {{/unless}}
                    ) {{> typeWithoutListConstraints}} {{../resolvedName}} ,
     {{/with}}
 {{/each}}
