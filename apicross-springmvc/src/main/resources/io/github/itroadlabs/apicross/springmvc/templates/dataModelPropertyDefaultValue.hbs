@@ -3,7 +3,7 @@
         {{#if string}}
             = "{{{defaultValue}}}"
         {{else}}
-            = {{{defaultValue}}}{{#if integer}}{{#eq format 'int64'}}L{{/eq}}{{/if}}
+            = {{{defaultValue}}}{{#if integer}}{{#if format}}{{#eq format 'int64'}}L{{/eq}}{{else}}L{{/if}}{{/if}}
         {{/if}}
     {{/if}}
 {{/if}}
