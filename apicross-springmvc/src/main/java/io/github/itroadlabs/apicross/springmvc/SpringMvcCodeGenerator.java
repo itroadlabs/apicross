@@ -4,15 +4,14 @@ import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
-import com.github.jknack.handlebars.io.FileTemplateLoader;
-import com.github.jknack.handlebars.io.TemplateLoader;
+import io.github.itroadlabs.apicross.core.data.model.DataModel;
 import io.github.itroadlabs.apicross.core.data.model.ObjectDataModel;
+import io.github.itroadlabs.apicross.core.data.model.PrimitiveDataModel;
 import io.github.itroadlabs.apicross.core.handler.model.MediaTypeContentModel;
 import io.github.itroadlabs.apicross.core.handler.model.RequestQueryParameter;
 import io.github.itroadlabs.apicross.core.handler.model.RequestsHandler;
 import io.github.itroadlabs.apicross.core.handler.model.RequestsHandlerMethod;
 import io.github.itroadlabs.apicross.java.JavaCodeGenerator;
-import io.github.itroadlabs.apicross.utils.HandlebarsFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -112,6 +111,22 @@ public class SpringMvcCodeGenerator extends JavaCodeGenerator<SpringMvcCodeGener
                 if ("multipart/form-data".equals(requestBody.getMediaType()) ||
                         "application/x-www-form-urlencoded".equals(requestBody.getMediaType())) {
                     requestBody.addCustomAttribute("avoidRequestBodyAnnotation", Boolean.TRUE);
+                } else {
+                    // this is for cases like this:
+                    // --------------------------------
+                    // POST /my-resource
+                    // Content-Type: image/png
+                    // --------------------------------
+                    // ...when API specification declares binary content in the request body
+                    DataModel content = requestBody.getContent();
+                    if ((content instanceof PrimitiveDataModel)) {
+                        PrimitiveDataModel primitiveDataModel = (PrimitiveDataModel) content;
+                        String type = primitiveDataModel.getType();
+                        String format = primitiveDataModel.getFormat();
+                        if ("string".equals(type) && "binary".equals(format)) {
+                            requestBody.addCustomAttribute("avoidRequestBodyAnnotation", Boolean.TRUE);
+                        }
+                    }
                 }
             }
         }));

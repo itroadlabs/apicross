@@ -19,6 +19,7 @@ import org.springframework.web.util.UriComponents;
 import javax.activation.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 
 @RestController
 public class WorksRequestsController implements WorksRequestsHandler {
@@ -46,7 +47,7 @@ public class WorksRequestsController implements WorksRequestsHandler {
         final EntityWithETag<Work> placeWorkResult = manageWorksService.placeWork(competitionId, (User) authentication.getPrincipal(), requestBody);
         UriComponents location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(placeWorkResult.getEntity().getId());
-        return ResponseEntity.created(location.toUri())
+        return ResponseEntity.created(URI.create("/my/works/" + placeWorkResult.getEntity().getId()))
                 .eTag(placeWorkResult.etag())
                 .build();
     }

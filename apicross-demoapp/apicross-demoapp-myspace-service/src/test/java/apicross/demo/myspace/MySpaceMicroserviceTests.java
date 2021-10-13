@@ -1,11 +1,14 @@
 package apicross.demo.myspace;
 
 import com.jayway.jsonpath.JsonPath;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -26,24 +29,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class MySpaceMicroserviceTests {
     @Autowired
     private MockMvc mockMvc;
+    @Value("classpath:testPicture.jpg")
+    private Resource testPicture;
 
     @Test
     public void request_to_not_existing_resource() throws Exception {
         mockMvc.perform(get("/unknown")
-                .with(httpBasic("user1", "user1Pass")))
+                        .with(httpBasic("user1", "user1Pass")))
                 .andExpect(status().is(404));
     }
 
     @Test
     public void request_without_authentication() throws Exception {
         mockMvc.perform(post("/my/competitions")
-                .contentType("application/vnd.demoapp.v1+json")
-                .content("{" +
-                        "\"title\":\"Demo Competition\"," +
-                        "\"votingType\":\"ClapsVoting\"," +
-                        "\"description\":\"" + loremIpsum() + "\"," +
-                        "\"participantReqs\":{\"minAge\":10}" +
-                        "}"))
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .content("{" +
+                                "\"title\":\"Demo Competition\"," +
+                                "\"votingType\":\"ClapsVoting\"," +
+                                "\"description\":\"" + loremIpsum() + "\"," +
+                                "\"participantReqs\":{\"minAge\":10}" +
+                                "}"))
                 .andExpect(status().is(401));
     }
 
@@ -52,25 +57,25 @@ public class MySpaceMicroserviceTests {
         RequestPostProcessor auth = httpBasic("user1", "user1Pass");
 
         mockMvc.perform(post("/my/competitions")
-                .with(auth)
-                .contentType("application/vnd.demoapp.v1+json")
-                .content("{" + // not all required properties supplied
-                        "\"title\":\"Demo Competition\"," +
-                        "\"votingType\":\"ClapsVoting\"" +
-                        "}"))
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .content("{" + // not all required properties supplied
+                                "\"title\":\"Demo Competition\"," +
+                                "\"votingType\":\"ClapsVoting\"" +
+                                "}"))
                 .andExpect(status().is(422))
                 .andExpect(jsonPath("validationErrors.requestBody[0].code").value("MissingRequiredFields"))
                 .andExpect(jsonPath("validationErrors.requestBody[0].fieldPath").value("$"));
 
         mockMvc.perform(post("/my/competitions")
-                .with(auth)
-                .contentType("application/vnd.demoapp.v1+json")
-                .content("{" +
-                        "\"title\":\"Demo Competition\"," +
-                        "\"votingType\":\"ClapsVoting\"," +
-                        "\"description\":\"" + loremIpsum() + "\"," +
-                        "\"participantReqs\":{}" + // minProperties == 1
-                        "}"))
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .content("{" +
+                                "\"title\":\"Demo Competition\"," +
+                                "\"votingType\":\"ClapsVoting\"," +
+                                "\"description\":\"" + loremIpsum() + "\"," +
+                                "\"participantReqs\":{}" + // minProperties == 1
+                                "}"))
                 .andExpect(status().is(422))
                 .andExpect(jsonPath("validationErrors.requestBody[0].code").value("TooFewFields"))
                 .andExpect(jsonPath("validationErrors.requestBody[0].fieldPath").value("$.participantReqs"));
@@ -79,14 +84,14 @@ public class MySpaceMicroserviceTests {
     @Test
     public void creating_competition_success() throws Exception {
         mockMvc.perform(post("/my/competitions")
-                .with(httpBasic("user1", "user1Pass"))
-                .contentType("application/vnd.demoapp.v1+json")
-                .content("{" +
-                        "\"title\":\"Demo Competition\"," +
-                        "\"votingType\":\"ClapsVoting\"," +
-                        "\"description\":\"" + loremIpsum() + "\"," +
-                        "\"participantReqs\":{\"minAge\":10}" +
-                        "}"))
+                        .with(httpBasic("user1", "user1Pass"))
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .content("{" +
+                                "\"title\":\"Demo Competition\"," +
+                                "\"votingType\":\"ClapsVoting\"," +
+                                "\"description\":\"" + loremIpsum() + "\"," +
+                                "\"participantReqs\":{\"minAge\":10}" +
+                                "}"))
                 .andExpect(status().is(201));
     }
 
@@ -95,14 +100,14 @@ public class MySpaceMicroserviceTests {
         RequestPostProcessor auth = httpBasic("user1", "user1Pass");
 
         MvcResult registerCompetitionResult = mockMvc.perform(post("/my/competitions")
-                .with(auth)
-                .contentType("application/vnd.demoapp.v1+json")
-                .content("{" +
-                        "\"title\":\"Demo Competition\"," +
-                        "\"votingType\":\"ClapsVoting\"," +
-                        "\"description\":\"" + loremIpsum() + "\"," +
-                        "\"participantReqs\":{\"minAge\":10}" +
-                        "}"))
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .content("{" +
+                                "\"title\":\"Demo Competition\"," +
+                                "\"votingType\":\"ClapsVoting\"," +
+                                "\"description\":\"" + loremIpsum() + "\"," +
+                                "\"participantReqs\":{\"minAge\":10}" +
+                                "}"))
                 .andReturn();
 
         String newCompetitionResourceURI = registerCompetitionResult.getResponse().getHeader("Location");
@@ -112,12 +117,12 @@ public class MySpaceMicroserviceTests {
         assertNotNull(eTag);
 
         MvcResult patchCompetitionResult = mockMvc.perform(patch(newCompetitionResourceURI)
-                .with(auth)
-                .contentType("application/vnd.demoapp.v1+json")
-                .header("If-Match", eTag)
-                .content("{" +
-                        "\"participantReqs\":{\"minAge\":5}" +
-                        "}"))
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .header("If-Match", eTag)
+                        .content("{" +
+                                "\"participantReqs\":{\"minAge\":5}" +
+                                "}"))
                 .andExpect(status().is(204))
                 .andReturn();
 
@@ -125,21 +130,21 @@ public class MySpaceMicroserviceTests {
         assertNotNull(eTag);
 
         mockMvc.perform(patch(newCompetitionResourceURI)
-                .with(auth)
-                .contentType("application/vnd.demoapp.v1+json")
-                .header("If-Match", eTag)
-                .content("{" +
-                        "\"participantReqs\":{\"minAge\":15}" +
-                        "}"))
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .header("If-Match", eTag)
+                        .content("{" +
+                                "\"participantReqs\":{\"minAge\":15}" +
+                                "}"))
                 .andExpect(status().is(412));
 
         mockMvc.perform(patch(newCompetitionResourceURI)
-                .with(auth)
-                .contentType("application/vnd.demoapp.v1+json")
-                .header("If-Match", eTagAfterPatch)
-                .content("{" +
-                        "\"participantReqs\":{\"minAge\":12}" +
-                        "}"))
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .header("If-Match", eTagAfterPatch)
+                        .content("{" +
+                                "\"participantReqs\":{\"minAge\":12}" +
+                                "}"))
                 .andExpect(status().is(204));
     }
 
@@ -148,26 +153,26 @@ public class MySpaceMicroserviceTests {
         RequestPostProcessor auth = httpBasic("user1", "user1Pass");
 
         MvcResult registerCompetitionResult = mockMvc.perform(post("/my/competitions")
-                .with(auth)
-                .contentType("application/vnd.demoapp.v1+json")
-                .content("{" +
-                        "\"title\":\"Demo Competition\"," +
-                        "\"votingType\":\"ClapsVoting\"," +
-                        "\"description\":\"" + loremIpsum() + "\"," +
-                        "\"participantReqs\":{\"minAge\":10}" +
-                        "}"))
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .content("{" +
+                                "\"title\":\"Demo Competition\"," +
+                                "\"votingType\":\"ClapsVoting\"," +
+                                "\"description\":\"" + loremIpsum() + "\"," +
+                                "\"participantReqs\":{\"minAge\":10}" +
+                                "}"))
                 .andReturn();
 
         String newCompetitionResourceURI = registerCompetitionResult.getResponse().getHeader("Location");
         assertNotNull(newCompetitionResourceURI);
 
         mockMvc.perform(get(newCompetitionResourceURI)
-                .with(auth)
-                .accept("application/vnd.demoapp.v1+json"))
+                        .with(auth)
+                        .accept("application/vnd.demoapp.v1+json"))
                 .andExpect(status().is(200));
 
         mockMvc.perform(delete(newCompetitionResourceURI)
-                .with(auth))
+                        .with(auth))
                 .andExpect(status().is(204));
     }
 
@@ -176,45 +181,101 @@ public class MySpaceMicroserviceTests {
         RequestPostProcessor auth = httpBasic("user1", "user1Pass");
 
         MvcResult registerCompetitionResult = mockMvc.perform(post("/my/competitions")
-                .with(auth)
-                .contentType("application/vnd.demoapp.v1+json")
-                .content("{" +
-                        "\"title\":\"Demo Competition\"," +
-                        "\"votingType\":\"ClapsVoting\"," +
-                        "\"description\":\"" + loremIpsum() + "\"," +
-                        "\"participantReqs\":{\"minAge\":10}" +
-                        "}"))
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .content("{" +
+                                "\"title\":\"Demo Competition\"," +
+                                "\"votingType\":\"ClapsVoting\"," +
+                                "\"description\":\"" + loremIpsum() + "\"," +
+                                "\"participantReqs\":{\"minAge\":10}" +
+                                "}"))
                 .andReturn();
 
         String newCompetitionResourceURI = registerCompetitionResult.getResponse().getHeader("Location");
         assertNotNull(newCompetitionResourceURI);
 
         MvcResult mvcResult = mockMvc.perform(get(newCompetitionResourceURI)
-                .with(auth)
-                .accept("application/vnd.demoapp.v1+json"))
+                        .with(auth)
+                        .accept("application/vnd.demoapp.v1+json"))
                 .andExpect(status().is(200))
                 .andReturn();
 
         String competitionId = JsonPath.read(mvcResult.getResponse().getContentAsString(), "$.id");
 
         mockMvc.perform(put("/my/competitions/{competitionId}/open", competitionId)
-                .with(auth)
-                .contentType("application/vnd.demoapp.v1+json")
-                .content("{" +
-                        "\"acceptWorksTillDate\": \"" + LocalDate.now().plus(10, ChronoUnit.DAYS) + "\"," +
-                        "\"acceptVotesTillDate\":\"" + LocalDate.now().plus(20, ChronoUnit.DAYS) + "\"" +
-                        "}"))
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .content("{" +
+                                "\"acceptWorksTillDate\": \"" + LocalDate.now().plus(10, ChronoUnit.DAYS) + "\"," +
+                                "\"acceptVotesTillDate\":\"" + LocalDate.now().plus(20, ChronoUnit.DAYS) + "\"" +
+                                "}"))
                 .andExpect(status().is(204));
 
         mockMvc.perform(post("/my/competitions/{competitionId}/works", competitionId)
-                .with(auth)
-                .contentType("application/vnd.demoapp.v1+json")
-                .content("{" +
-                        "\"title\": \"Bla-Bla song\"," +
-                        "\"description\":\"" + loremIpsum() + "\"," +
-                        "\"author\": \"Victor\"," +
-                        "\"author_age\": 12" +
-                        "}"))
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .content("{" +
+                                "\"title\": \"Bla-Bla song\"," +
+                                "\"description\":\"" + loremIpsum() + "\"," +
+                                "\"author\": \"Victor\"," +
+                                "\"author_age\": 12" +
+                                "}"))
+                .andExpect(status().is(201));
+    }
+
+    @Test
+    public void add_work_file() throws Exception {
+        RequestPostProcessor auth = httpBasic("user1", "user1Pass");
+
+        MvcResult registerCompetitionResult = mockMvc.perform(post("/my/competitions")
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .content("{" +
+                                "\"title\":\"Demo Competition\"," +
+                                "\"votingType\":\"ClapsVoting\"," +
+                                "\"description\":\"" + loremIpsum() + "\"," +
+                                "\"participantReqs\":{\"minAge\":10}" +
+                                "}"))
+                .andReturn();
+
+        String newCompetitionResourceURI = registerCompetitionResult.getResponse().getHeader("Location");
+        assertNotNull(newCompetitionResourceURI);
+
+        MvcResult mvcResult = mockMvc.perform(get(newCompetitionResourceURI)
+                        .with(auth)
+                        .accept("application/vnd.demoapp.v1+json"))
+                .andExpect(status().is(200))
+                .andReturn();
+
+        String competitionId = JsonPath.read(mvcResult.getResponse().getContentAsString(), "$.id");
+
+        mockMvc.perform(put("/my/competitions/{competitionId}/open", competitionId)
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .content("{" +
+                                "\"acceptWorksTillDate\": \"" + LocalDate.now().plus(10, ChronoUnit.DAYS) + "\"," +
+                                "\"acceptVotesTillDate\":\"" + LocalDate.now().plus(20, ChronoUnit.DAYS) + "\"" +
+                                "}"))
+                .andExpect(status().is(204));
+
+        MvcResult mvcResult1 = mockMvc.perform(post("/my/competitions/{competitionId}/works", competitionId)
+                        .with(auth)
+                        .contentType("application/vnd.demoapp.v1+json")
+                        .content("{" +
+                                "\"title\": \"Bla-Bla song\"," +
+                                "\"description\":\"" + loremIpsum() + "\"," +
+                                "\"author\": \"Victor\"," +
+                                "\"author_age\": 12" +
+                                "}"))
+                .andExpect(status().is(201))
+                .andReturn();
+
+        String workLocation = mvcResult1.getResponse().getHeader("Location");
+        String addWorkFileURI = workLocation + "/files";
+        mockMvc.perform(post(addWorkFileURI)
+                        .with(auth)
+                        .contentType("image/jpeg")
+                        .content(IOUtils.toByteArray(testPicture.getInputStream())))
                 .andExpect(status().is(201));
     }
 
