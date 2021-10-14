@@ -4,6 +4,7 @@ import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
+import io.github.itroadlabs.apicross.core.data.model.ArrayDataModel;
 import io.github.itroadlabs.apicross.core.data.model.DataModel;
 import io.github.itroadlabs.apicross.core.data.model.ObjectDataModel;
 import io.github.itroadlabs.apicross.core.data.model.PrimitiveDataModel;
@@ -162,6 +163,11 @@ public class SpringMvcCodeGenerator extends JavaCodeGenerator<SpringMvcCodeGener
             for (RequestsHandlerMethod method : methods) {
                 String operationId = method.getOperationId();
                 if (method.hasQueryParameters() && !handledOperations.contains(operationId)) {
+                    Collection<RequestQueryParameter> queryParameters = method.getQueryParameters();
+                    for (RequestQueryParameter queryParameter : queryParameters) {
+                        DataModel queryParameterType = queryParameter.getType();
+                        setupDataModelConstraintsCustomAttributes(queryParameterType);
+                    }
                     File sourceFile = new File(modelsPackageDir, StringUtils.capitalize(operationId) + "Query.java");
                     try (FileOutputStream out = new FileOutputStream(sourceFile)) {
                         PrintWriter sourcePrintWriter = new PrintWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
@@ -177,7 +183,7 @@ public class SpringMvcCodeGenerator extends JavaCodeGenerator<SpringMvcCodeGener
                         if (!ifaces.isEmpty()) {
                             context.combine("queryObjectTypeInterfaces", ifaces);
                         }
-                        context.combine("queryObjectRequiredProperties", method.getQueryParameters().stream()
+                        context.combine("queryObjectRequiredProperties", queryParameters.stream()
                                 .filter(RequestQueryParameter::isRequired)
                                 .map(RequestQueryParameter::getName)
                                 .collect(Collectors.toSet()));

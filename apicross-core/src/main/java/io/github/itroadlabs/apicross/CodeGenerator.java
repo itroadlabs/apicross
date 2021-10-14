@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 public abstract class CodeGenerator<T extends CodeGeneratorOptions> {
@@ -79,32 +78,44 @@ public abstract class CodeGenerator<T extends CodeGeneratorOptions> {
 
     protected void preProcess(Iterable<ObjectDataModel> models, Iterable<RequestsHandler> handlers) {
         for (ObjectDataModel model : models) {
-            Set<ObjectDataModelProperty> properties = model.getProperties();
-            for (ObjectDataModelProperty property : properties) {
+            setupDataModelConstraintsCustomAttributes(model);
+        }
+    }
+
+    protected void setupDataModelConstraintsCustomAttributes(DataModel dataModel) {
+        if (dataModel instanceof PrimitiveDataModel) {
+            setupPrimitiveDataModelConstraintsCustomAttributes((PrimitiveDataModel) dataModel);
+        } else if (dataModel instanceof ArrayDataModel) {
+            setupArrayDataModelConstraintsCustomAttributes((ArrayDataModel) dataModel);
+            setupDataModelConstraintsCustomAttributes(((ArrayDataModel) dataModel).getItemsDataModel());
+        } else if (dataModel instanceof ObjectDataModel) {
+            for (ObjectDataModelProperty property : ((ObjectDataModel) dataModel).getProperties()) {
                 DataModel propertyDataModel = property.getType();
-                if (propertyDataModel instanceof PrimitiveDataModel) {
-                    PrimitiveDataModel primitiveDataModel = (PrimitiveDataModel) propertyDataModel;
-                    boolean maxLengthDefined = primitiveDataModel.getMaxLength() != null;
-                    boolean minLengthDefined = primitiveDataModel.getMinLength() != null;
-                    boolean constrainedLength = maxLengthDefined || minLengthDefined;
-                    boolean minimumDefined = primitiveDataModel.getMinimum() != null;
-                    boolean maximumDefined = primitiveDataModel.getMaximum() != null;
-                    primitiveDataModel.addCustomAttribute("constrainedLength", constrainedLength);
-                    primitiveDataModel.addCustomAttribute("maxLengthDefined", maxLengthDefined);
-                    primitiveDataModel.addCustomAttribute("minLengthDefined", minLengthDefined);
-                    primitiveDataModel.addCustomAttribute("minimumDefined", minimumDefined);
-                    primitiveDataModel.addCustomAttribute("maximumDefined", maximumDefined);
-                } else if (propertyDataModel instanceof ArrayDataModel) {
-                    ArrayDataModel arrayDataModel = (ArrayDataModel) propertyDataModel;
-                    boolean maxItemsDefined = arrayDataModel.getMaxItems() != null;
-                    boolean minItemsDefined = arrayDataModel.getMinItems() != null;
-                    boolean arrayLengthConstrained = maxItemsDefined || minItemsDefined;
-                    arrayDataModel.addCustomAttribute("arrayLengthConstrained", arrayLengthConstrained);
-                    arrayDataModel.addCustomAttribute("maxItemsDefined", maxItemsDefined);
-                    arrayDataModel.addCustomAttribute("minItemsDefined", minItemsDefined);
-                }
+                setupDataModelConstraintsCustomAttributes(propertyDataModel);
             }
         }
+    }
+
+    protected void setupArrayDataModelConstraintsCustomAttributes(ArrayDataModel arrayDataModel) {
+        boolean maxItemsDefined = arrayDataModel.getMaxItems() != null;
+        boolean minItemsDefined = arrayDataModel.getMinItems() != null;
+        boolean arrayLengthConstrained = maxItemsDefined || minItemsDefined;
+        arrayDataModel.addCustomAttribute("arrayLengthConstrained", arrayLengthConstrained);
+        arrayDataModel.addCustomAttribute("maxItemsDefined", maxItemsDefined);
+        arrayDataModel.addCustomAttribute("minItemsDefined", minItemsDefined);
+    }
+
+    protected void setupPrimitiveDataModelConstraintsCustomAttributes(PrimitiveDataModel dataModel) {
+        boolean maxLengthDefined = dataModel.getMaxLength() != null;
+        boolean minLengthDefined = dataModel.getMinLength() != null;
+        boolean constrainedLength = maxLengthDefined || minLengthDefined;
+        boolean minimumDefined = dataModel.getMinimum() != null;
+        boolean maximumDefined = dataModel.getMaximum() != null;
+        dataModel.addCustomAttribute("constrainedLength", constrainedLength);
+        dataModel.addCustomAttribute("maxLengthDefined", maxLengthDefined);
+        dataModel.addCustomAttribute("minLengthDefined", minLengthDefined);
+        dataModel.addCustomAttribute("minimumDefined", minimumDefined);
+        dataModel.addCustomAttribute("maximumDefined", maximumDefined);
     }
 
     protected abstract void generate(Collection<ObjectDataModel> models, List<RequestsHandler> handlers) throws IOException;
