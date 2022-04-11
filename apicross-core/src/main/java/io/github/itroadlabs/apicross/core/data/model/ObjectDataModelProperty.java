@@ -45,6 +45,6 @@ public class ObjectDataModelProperty extends NamedDatum {
                 this.getName(), this.getResolvedName(),
                 this.getDescription(), this.getType(),
                 this.schemaThatDeclaresThisProperty,
-                this.isRequired(), this.isRequired());
+                this.isRequired(), this.isDeprecated());
     }
 }
