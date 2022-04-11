@@ -1,13 +1,5 @@
 {{#each queryParameters}}
     {{#with type}}
-     @RequestParam(
-                  name="{{{../name}}}",
-                  required={{../required}}
-                  {{#if defaultValue}}
-                      {{#if primitive}}
-                          , defaultValue = "{{{defaultValue}}}"
-                      {{/if}}
-                  {{/if}}
-                   ) {{> typeWithoutListConstraints}} {{../resolvedName}} ,
+        @RequestParam(name="{{{../name}}}") {{> typeWithoutListConstraints}} {{../resolvedName}} ,
     {{/with}}
 {{/each}}

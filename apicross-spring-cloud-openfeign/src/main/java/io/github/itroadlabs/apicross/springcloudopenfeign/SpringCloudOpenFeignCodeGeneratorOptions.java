@@ -5,13 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.List;
-
 @Getter
 @Setter
 @ToString(callSuper = true)
 public class SpringCloudOpenFeignCodeGeneratorOptions extends JavaCodeGeneratorOptions {
     private boolean enableApicrossJavaBeanValidationSupport = false;
-    private boolean useQueryStringParametersObject = true;
-    private List<String> alternativeTemplatesPath;
 }
