@@ -4,7 +4,6 @@ import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
-import io.github.itroadlabs.apicross.core.data.model.ArrayDataModel;
 import io.github.itroadlabs.apicross.core.data.model.DataModel;
 import io.github.itroadlabs.apicross.core.data.model.ObjectDataModel;
 import io.github.itroadlabs.apicross.core.data.model.PrimitiveDataModel;
@@ -141,7 +140,9 @@ public class SpringMvcCodeGenerator extends JavaCodeGenerator<SpringMvcCodeGener
     @Override
     protected void writeHandlersSources(File handlersPackageDir, File modelsPackageDir, List<RequestsHandler> handlers) throws IOException {
         super.writeHandlersSources(handlersPackageDir, modelsPackageDir, handlers);
-        writeApiHandlerQueryObjectModels(handlers, modelsPackageDir);
+        if (this.useQueryStringParametersObject) {
+            writeApiHandlerQueryObjectModels(handlers, modelsPackageDir);
+        }
     }
 
     @Override
