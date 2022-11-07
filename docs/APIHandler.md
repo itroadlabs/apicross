@@ -1,4 +1,4 @@
-#API handler
+# API handler
 API Handler is an object handling API requests. For SpringWebMVC - handlers are just `@Controller` classes.
 
 APICROSS generates Java interfaces with spring MVC metadata. So application's `@Controller`s have to implement these interfaces.
