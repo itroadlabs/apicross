@@ -13,6 +13,7 @@ import java.util.Set;
 public class CodeGeneratorOptions {
     private String writeSourcesTo;
     private boolean generateOnlyModels = false;
+    private boolean cleanupUnusedModels = false;
     private Set<String> skipTags = Collections.emptySet();
     private Set<String> generateOnlyTags = Collections.emptySet();
     private String requestsHandlerMethodNameResolverClassName;

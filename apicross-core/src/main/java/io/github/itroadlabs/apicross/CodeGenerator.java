@@ -11,7 +11,7 @@ import io.github.itroadlabs.apicross.core.handler.model.RequestsHandler;
 import io.github.itroadlabs.apicross.utils.OpenApiComponentsIndex;
 import io.github.itroadlabs.apicross.utils.OpenApiSpecificationParser;
 import io.github.itroadlabs.apicross.utils.SchemaHelper;
-import io.github.itroadlabs.apicross.utils.UnusedSchemasCleaner;
+import io.github.itroadlabs.apicross.utils.UnusedModelsCleaner;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.Schema;
@@ -63,9 +63,9 @@ public abstract class CodeGenerator<T extends CodeGeneratorOptions> {
         log.info("Resolving handlers...");
         List<RequestsHandler> handlers = resolveRequestsHandlers(requestsHandlersResolver, openAPI.getPaths());
 
-        if (!getOptions().isGenerateOnlyModels()) {
+        if (!getOptions().isGenerateOnlyModels() && getOptions().isCleanupUnusedModels()) {
             log.info("Cleaning unused schemas...");
-            UnusedSchemasCleaner cleaner = new UnusedSchemasCleaner();
+            UnusedModelsCleaner cleaner = new UnusedModelsCleaner();
             models = cleaner.clean(models, handlers);
         }
 

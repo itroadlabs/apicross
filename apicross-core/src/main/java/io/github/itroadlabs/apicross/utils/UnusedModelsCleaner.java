@@ -11,7 +11,7 @@ import io.github.itroadlabs.apicross.core.handler.model.RequestsHandlerMethod;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class UnusedSchemasCleaner {
+public class UnusedModelsCleaner {
     public Collection<ObjectDataModel> clean(Collection<ObjectDataModel> source, List<RequestsHandler> requestHandlers) {
         Set<ObjectDataModel> referencedSchemas = new HashSet<>();
         for (RequestsHandler requestHandler : requestHandlers) {
