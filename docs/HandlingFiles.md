@@ -6,7 +6,7 @@ Take a look at the following API specification snippet:
     parameters:
       - $ref: '#/components/parameters/PictureId'
     get:
-      operationId: getPicturePyId
+      operationId: getPictureById
       tags:
         - Pictures
       responses:
@@ -27,7 +27,7 @@ Then resulting Spring MVC controller methods will look like:
       method = RequestMethod.GET,
       path = "/pictures/{pictureId}",
       produces = "image/jpeg")
-  ResponseEntity<org.springframework.core.io.InputStreamResource> getPicturePyIdProduceImageJpeg(
+  ResponseEntity<org.springframework.core.io.InputStreamResource> getPictureByIdProduceImageJpeg(
       @PathVariable("pictureId") String pictureId,
       @RequestHeader HttpHeaders headers) throws Exception;
 ```
