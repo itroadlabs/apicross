@@ -58,8 +58,8 @@ public class DefaultRequestsHandlerMethodsResolver implements RequestsHandlerMet
         List<RequestUriPathParameter> pathParameters = allParameters == null ? Collections.emptyList() : resolvePathParameters(allParameters, parameterNameResolver);
 
         return requestAndResponses.stream()
-                .map(operationInputOutput ->
-                        createRequestsHandlerMethod(httpOperation, operationInputOutput, queryParameters, pathParameters, methodNameResolver))
+                .map(operationRequestResponse ->
+                        createRequestsHandlerMethod(httpOperation, operationRequestResponse, queryParameters, pathParameters, methodNameResolver))
                 .collect(Collectors.toList());
     }
 
@@ -75,6 +75,7 @@ public class DefaultRequestsHandlerMethodsResolver implements RequestsHandlerMet
                 requestAndResponse.getResponseMediaType());
 
         MediaTypeContentModel requestBody = resolveRequestBody(requestAndResponse);
+        MediaTypeContentModel responseBody = resolveResponseBody(requestAndResponse);
 
         return new RequestsHandlerMethod()
                 .setOperation(operation)
@@ -88,7 +89,7 @@ public class DefaultRequestsHandlerMethodsResolver implements RequestsHandlerMet
                 .setPathParameters(pathParameters)
                 .setRequestBodyRequired(requestAndResponse.isRequestBodyRequired())
                 .setRequestBody(requestBody)
-                .setResponseBody(resolveResponseBody(requestAndResponse));
+                .setResponseBody(responseBody);
     }
 
     private MediaTypeContentModel resolveRequestBody(OperationRequestAndResponse requestAndResponse) {
