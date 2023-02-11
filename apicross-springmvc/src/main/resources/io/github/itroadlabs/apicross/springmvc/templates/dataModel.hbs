@@ -97,6 +97,10 @@ public {{typeName}}() {}
     }
 {{/with}}
 
+    public < O > O transform(@Nonnull Function<{{typeName}}, O > transformation) {
+        return transformation.apply(this);
+    }
+
 {{#if properties}}
     public static final class JsonFieldNames {
     {{#each properties}}
