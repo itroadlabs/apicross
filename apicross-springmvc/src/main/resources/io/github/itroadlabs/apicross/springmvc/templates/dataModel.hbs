@@ -49,7 +49,7 @@ import java.util.function.*;
     {{/each}}
     })
 {{/if}}
-@javax.annotation.Generated(value = "{{generatorOpts.generatorClassName}}", date = "{{generatorOpts.generationDate}}")
+@Generated(value = "{{generatorOpts.generatorClassName}}", date = "{{generatorOpts.generationDate}}")
 public {{#if inheritanceChildModels}}abstract{{/if}} class {{typeName}}
 {{#if inheritanceParentTypeName}} extends {{{inheritanceParentTypeName}}}{{/if}}
 {{#if generatorOpts.enableApicrossJavaBeanValidationSupport}}implements HasSpecifiedProperties{{/if}}
@@ -97,9 +97,11 @@ public {{typeName}}() {}
     }
 {{/with}}
 
+{{#unless inheritanceChildModels}}
     public < O > O transform(@Nonnull Function<{{typeName}}, O > transformation) {
-        return transformation.apply(this);
+    return transformation.apply(this);
     }
+{{/unless}}
 
 {{#if properties}}
     public static final class JsonFieldNames {

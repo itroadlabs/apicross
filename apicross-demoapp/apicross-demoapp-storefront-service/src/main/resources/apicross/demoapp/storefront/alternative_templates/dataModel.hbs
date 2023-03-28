@@ -99,4 +99,9 @@ public {{typeName}}() {}
     return this.$additionalProperties;
     }
 {{/with}}
+{{#unless inheritanceChildModels}}
+    public < O > O transform(@Nonnull Function<{{typeName}}, O > transformation) {
+    return transformation.apply(this);
+    }
+{{/unless}}
 }
