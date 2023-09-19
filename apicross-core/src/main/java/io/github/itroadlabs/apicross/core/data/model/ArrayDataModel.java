@@ -4,11 +4,12 @@ import io.swagger.v3.oas.models.media.ArraySchema;
 import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class ArrayDataModel extends DataModel {
-    private final DataModel itemsDataModel;
+    private final Supplier<DataModel> itemsDataModel;
 
-    ArrayDataModel(DataModel itemsDataModel, ArraySchema source) {
+    ArrayDataModel(Supplier<DataModel> itemsDataModel, ArraySchema source) {
         super(source);
         this.itemsDataModel = Objects.requireNonNull(itemsDataModel);
     }
@@ -26,7 +27,7 @@ public class ArrayDataModel extends DataModel {
     }
 
     public DataModel getItemsDataModel() {
-        return itemsDataModel;
+        return itemsDataModel.get();
     }
 
     @Override

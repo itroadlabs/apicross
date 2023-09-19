@@ -10,7 +10,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class DataModelResolverHandlesSimpleCasesTests extends DataModelSchemaResolverTestsBase {
+public class DataModelResolverHandlesSimpleCasesTests extends DataModelResolverTestsBase {
     @Test
     public void primitiveTypeResolved() throws IOException {
         init("DataModelResolverHandlesSimpleCasesTests.primitiveTypeResolved.yaml");

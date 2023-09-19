@@ -11,7 +11,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class DataModelResolverHandlesAdditionalPropertiesTests extends DataModelSchemaResolverTestsBase {
+public class DataModelResolverHandlesAdditionalPropertiesTests extends DataModelResolverTestsBase {
     @BeforeEach
     public void setUp() throws IOException {
         init("DataModelSchemaResolverHandlesAdditionalPropertiesTests.yaml");

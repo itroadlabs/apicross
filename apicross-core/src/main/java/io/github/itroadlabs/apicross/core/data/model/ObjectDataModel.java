@@ -145,6 +145,10 @@ public class ObjectDataModel extends DataModel {
         return new LinkedHashSet<>(propertiesMap.values());
     }
 
+    public Set<ObjectDataModelProperty> copyProperties() {
+        return getProperties().stream().map(ObjectDataModelProperty::copy).collect(Collectors.toSet());
+    }
+
     @Nullable
     public ObjectDataModelProperty getProperty(String name) {
         return propertiesMap.get(name);

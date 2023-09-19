@@ -11,7 +11,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class DataModelResolverHandlesArraysTests extends DataModelSchemaResolverTestsBase {
+public class DataModelResolverHandlesArraysTests extends DataModelResolverTestsBase {
     @Test
     public void simpleArrayResolved() throws IOException {
         init("DataModelResolverHandlesArraysTests.simpleArrayResolved.yaml");

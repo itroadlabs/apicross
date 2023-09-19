@@ -6,7 +6,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 
 import java.io.IOException;
 
-public abstract class DataModelSchemaResolverTestsBase {
+public abstract class DataModelResolverTestsBase {
     protected OpenApiComponentsIndex openAPIComponentsIndex;
     protected DataModelResolver resolver;
 

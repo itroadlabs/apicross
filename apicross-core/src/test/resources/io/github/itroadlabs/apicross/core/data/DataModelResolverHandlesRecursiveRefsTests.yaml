@@ -1,0 +1,51 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Test
+paths: {}
+components:
+  schemas:
+    Model1:
+      type: object
+      properties:
+        a:
+          type: string
+        parent:
+          $ref: '#/components/schemas/Model1'
+
+    Model2:
+      type: object
+      properties:
+        a:
+          type: string
+        b:
+          $ref: '#/components/schemas/Model3'
+
+    Model3:
+      type: object
+      properties:
+        parent:
+          $ref: '#/components/schemas/Model2'
+
+
+    Model4:
+      type: object
+      properties:
+        a:
+          type: array
+          items:
+            $ref: '#/components/schemas/Model4'
+
+    Model5:
+      type: object
+      properties:
+        a:
+          type: array
+          items:
+            $ref: '#/components/schemas/Model6'
+
+    Model6:
+      type: object
+      properties:
+        b:
+          $ref: '#/components/schemas/Model5'

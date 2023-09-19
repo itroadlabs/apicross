@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
-public class DataModelResolverHandlesInlineModelsTests extends DataModelSchemaResolverTestsBase {
+public class DataModelResolverHandlesInlineModelsTests extends DataModelResolverTestsBase {
     @BeforeEach
     public void setup() throws IOException {
         init("DataModelResolverHandlesInlineModelsTests.yaml");

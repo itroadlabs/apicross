@@ -5,13 +5,15 @@ import io.github.itroadlabs.apicross.core.NamedDatum;
 import io.swagger.v3.oas.models.media.Schema;
 import org.apache.commons.lang3.BooleanUtils;
 
+import java.util.function.Supplier;
+
 public class ObjectDataModelProperty extends NamedDatum {
     /**
      * Schema from OpenAPI specification, which declares this property
      */
     private final Schema<?> schemaThatDeclaresThisProperty;
 
-    public ObjectDataModelProperty(String name, String resolvedName, String description, DataModel dataModel,
+    public ObjectDataModelProperty(String name, String resolvedName, String description, Supplier<DataModel> dataModel,
                                    Schema<?> schemaThatDeclaresThisProperty, boolean required, boolean deprecated) {
         super(name, resolvedName, description, dataModel, required, deprecated);
         this.schemaThatDeclaresThisProperty = schemaThatDeclaresThisProperty;
@@ -43,7 +45,7 @@ public class ObjectDataModelProperty extends NamedDatum {
     public ObjectDataModelProperty copy() {
         return new ObjectDataModelProperty(
                 this.getName(), this.getResolvedName(),
-                this.getDescription(), this.getType(),
+                this.getDescription(), this::getType,
                 this.schemaThatDeclaresThisProperty,
                 this.isRequired(), this.isDeprecated());
     }

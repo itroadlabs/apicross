@@ -9,6 +9,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public abstract class DataModel extends HasCustomModelAttributes {
     private final Schema<?> source;
@@ -25,7 +26,7 @@ public abstract class DataModel extends HasCustomModelAttributes {
         return new PrimitiveDataModel(source);
     }
 
-    public static ArrayDataModel newArrayDataModel(@NonNull ArraySchema source, @NonNull DataModel arrayItemType) {
+    public static ArrayDataModel newArrayDataModel(@NonNull ArraySchema source, @NonNull Supplier<DataModel> arrayItemType) {
         return new ArrayDataModel(arrayItemType, source);
     }
 

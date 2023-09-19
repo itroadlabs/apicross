@@ -5,22 +5,27 @@ import io.swagger.v3.oas.models.media.Schema;
 import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public abstract class NamedDatum extends HasCustomModelAttributes {
     private final String name;
     private final String resolvedName;
     private final String description;
-    private final DataModel type;
+    private final Supplier<DataModel> type;
     private final boolean deprecated;
     private boolean required;
 
-    public NamedDatum(String name, String resolvedName, String description, DataModel dataModel, boolean required, boolean deprecated) {
+    public NamedDatum(String name, String resolvedName, String description, Supplier<DataModel> dataModel, boolean required, boolean deprecated) {
         this.name = name;
         this.resolvedName = resolvedName;
         this.description = description;
         this.type = dataModel;
         this.required = required;
         this.deprecated = deprecated;
+    }
+
+    public NamedDatum(String name, String resolvedName, String description, DataModel dataModel, boolean required, boolean deprecated) {
+        this(name, resolvedName, description, () -> dataModel, required, deprecated);
     }
 
     public String getName() {
@@ -36,7 +41,7 @@ public abstract class NamedDatum extends HasCustomModelAttributes {
     }
 
     public DataModel getType() {
-        return type;
+        return type.get();
     }
 
     public boolean isOptional() {

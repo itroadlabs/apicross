@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DataModelResolverHandlesOneOfTests extends DataModelSchemaResolverTestsBase {
+public class DataModelResolverHandlesOneOfTests extends DataModelResolverTestsBase {
     @BeforeEach
     void setup() throws IOException {
         init("DataModelResolverHandlesOneOfTests.yaml");

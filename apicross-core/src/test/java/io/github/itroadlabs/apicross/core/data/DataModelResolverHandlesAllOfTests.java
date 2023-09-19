@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DataModelResolverHandlesAllOfTests extends DataModelSchemaResolverTestsBase {
+public class DataModelResolverHandlesAllOfTests extends DataModelResolverTestsBase {
     @BeforeEach
     public void setup() throws IOException {
         init("DataModelResolverHandlesAllOfTests.yaml");

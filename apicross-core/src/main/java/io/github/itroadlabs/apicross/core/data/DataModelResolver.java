@@ -9,18 +9,19 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class DataModelResolver {
-    private final PropertyNameResolver propertyNameResolver;
     private final OpenApiComponentsIndex openAPIComponentsIndex;
+    private final PropertyNameResolver propertyNameResolver;
     private final Map<String, DataModel> by$refResolutionCache = new HashMap<>();
+    private final ReflexiveRefHandler reflexiveRefHandler;
     private final Stack<String> resolvingPropertiesStack = new Stack<>();
 
     public DataModelResolver(OpenApiComponentsIndex openAPIComponentsIndex, PropertyNameResolver propertyNameResolver) {
         this.openAPIComponentsIndex = openAPIComponentsIndex;
         this.propertyNameResolver = propertyNameResolver;
+        this.reflexiveRefHandler = new ReflexiveRefHandler(by$refResolutionCache::get);
     }
 
     @Nonnull
@@ -41,7 +42,9 @@ public class DataModelResolver {
 
         log.debug("No cached schema, name: {}, $ref: {}, description: {}", schemaName, schema$ref, schema.getDescription());
 
+        reflexiveRefHandler.begin(schema$ref);
         DataModel dataModel = doResolve(schema);
+        reflexiveRefHandler.end();
 
         if (schema$ref != null) {
             by$refResolutionCache.put(schema$ref, dataModel);
@@ -63,13 +66,7 @@ public class DataModelResolver {
         } else if (schema instanceof ArraySchema) {
             return resolveArraySchema((ArraySchema) schema);
         } else if (schema instanceof ComposedSchema) {
-            if (((ComposedSchema) schema).getAllOf() != null) {
-                return resolveAllOfSchema((ComposedSchema) schema);
-            } else if (((ComposedSchema) schema).getOneOf() != null) {
-                return resolveOneOfSchema(schema);
-            } else if ((((ComposedSchema) schema).getAnyOf() != null)) {
-                return DataModel.anyType(schema);
-            }
+            return resolveComposedSchema((ComposedSchema) schema);
         } else if (schema instanceof MapSchema) {
             return resolveMapSchema(schema);
         } else if (schema instanceof ObjectSchema || schema.getProperties() != null) {
@@ -80,6 +77,17 @@ public class DataModelResolver {
             }
         }
 
+        throw new DataModelResolverException("Unsupported schema: " + schema);
+    }
+
+    private DataModel resolveComposedSchema(ComposedSchema schema) {
+        if (schema.getAllOf() != null) {
+            return resolveAllOfSchema(schema);
+        } else if (schema.getOneOf() != null) {
+            return resolveOneOfSchema(schema);
+        } else if ((schema.getAnyOf() != null)) {
+            return DataModel.anyType(schema);
+        }
         throw new DataModelResolverException("Unsupported schema: " + schema);
     }
 
@@ -174,7 +182,7 @@ public class DataModelResolver {
                     }
                 }
 
-                allProperties.addAll(objectDataModel.getProperties().stream().map(ObjectDataModelProperty::copy).collect(Collectors.toList()));
+                allProperties.addAll(objectDataModel.copyProperties());
             }
 
             if (partTypeSchema instanceof PrimitiveDataModel) {
@@ -191,7 +199,7 @@ public class DataModelResolver {
             }
         }
 
-        if (inFieldResolutionContext() && anonymousPartsCount == 1) {
+        if (inFieldResolutionContext() && anonymousPartsCount == 1 && partsSchemas.size() == 2) {
             // this magic is to handle constructions like this:
             // property1:
             //   allOf:
@@ -281,14 +289,17 @@ public class DataModelResolver {
         }
     }
 
-    private boolean inFieldResolutionContext() {
-        return !resolvingPropertiesStack.isEmpty();
-    }
-
     private ArrayDataModel resolveArraySchema(ArraySchema schema) {
         Schema<?> arrayItemsSchema = schema.getItems();
-        DataModel arrayItemsDataModel = resolveMayBe$ref(arrayItemsSchema);
-        return DataModel.newArrayDataModel(schema, arrayItemsDataModel);
+        if (arrayItemsSchema == null) {
+            throw new DataModelResolverException("array items schema is not defined");
+        }
+        if (arrayItemsSchema.get$ref() != null && reflexiveRefHandler.reflexiveRefDetected(arrayItemsSchema.get$ref())) {
+            return DataModel.newArrayDataModel(schema, reflexiveRefHandler.resolveLater(arrayItemsSchema.get$ref()));
+        } else {
+            DataModel arrayItemsDataModel = resolveMayBe$ref(arrayItemsSchema);
+            return DataModel.newArrayDataModel(schema, () -> arrayItemsDataModel);
+        }
     }
 
     private ObjectDataModel resolveObjectSchema(Schema<?> schema) {
@@ -296,45 +307,63 @@ public class DataModelResolver {
     }
 
     private ObjectDataModel resolveObjectSchema(Schema<?> schema, DataModel additionalPropertiesDataModel) {
-        Set<ObjectDataModelProperty> properties = resolveObjectSchemaProperties(schema);
+        Set<ObjectDataModelProperty> properties = resolveProperties(schema);
         return DataModel.newObjectDataModel(schema, schema.getName(), properties, additionalPropertiesDataModel);
     }
 
-    private Set<ObjectDataModelProperty> resolveObjectSchemaProperties(Schema<?> schema) {
+    private Set<ObjectDataModelProperty> resolveProperties(Schema<?> schema) {
         Map<String, Schema> properties = schema.getProperties();
         Set<ObjectDataModelProperty> result = new LinkedHashSet<>();
         if (properties != null) {
             for (String apiPropertyName : properties.keySet()) {
                 Schema<?> propertySchema = properties.get(apiPropertyName);
+                String resolvePropertyName = propertyNameResolver.resolvePropertyName(propertySchema, apiPropertyName);
                 resolvingPropertiesStack.push(apiPropertyName);
                 try {
-                    DataModel propertyDataModel = resolveMayBe$ref(propertySchema);
-                    String description = propertySchema.getDescription();
-
-                    if (description == null) {
-                        description = propertyDataModel.getSource().getDescription();
-                    }
-
-                    boolean propertyRequired;
-                    if (schema.getRequired() != null) {
-                        propertyRequired = schema.getRequired().contains(apiPropertyName);
+                    ObjectDataModelProperty dataModelProperty;
+                    if (propertySchema.get$ref() != null && reflexiveRefHandler.reflexiveRefDetected(propertySchema.get$ref())) {
+                        dataModelProperty = new ObjectDataModelProperty(apiPropertyName, resolvePropertyName, null,
+                                reflexiveRefHandler.resolveLater(propertySchema.get$ref()), schema, isPropertyRequired(schema, apiPropertyName),
+                                BooleanUtils.isTrue(propertySchema.getDeprecated()));
                     } else {
-                        propertyRequired = false;
-                    }
+                        DataModel propertyDataModel = resolveMayBe$ref(propertySchema);
+                        String description = propertySchema.getDescription();
 
-                    result.add(new ObjectDataModelProperty(
-                            apiPropertyName,
-                            propertyNameResolver.resolvePropertyName(propertySchema, apiPropertyName),
-                            description,
-                            propertyDataModel,
-                            schema, propertyRequired,
-                            BooleanUtils.isTrue(propertySchema.getDeprecated())));
+                        if (description == null) {
+                            description = propertyDataModel.getSource().getDescription();
+                        }
+
+                        boolean propertyRequired = isPropertyRequired(schema, apiPropertyName);
+
+                        dataModelProperty = new ObjectDataModelProperty(
+                                apiPropertyName,
+                                resolvePropertyName,
+                                description,
+                                () -> propertyDataModel,
+                                schema, propertyRequired,
+                                BooleanUtils.isTrue(propertySchema.getDeprecated()));
+                    }
+                    result.add(dataModelProperty);
                 } finally {
                     resolvingPropertiesStack.pop();
                 }
             }
         }
         return result;
+    }
+
+    private boolean isPropertyRequired(Schema<?> schema, String apiPropertyName) {
+        boolean propertyRequired;
+        if (schema.getRequired() != null) {
+            propertyRequired = schema.getRequired().contains(apiPropertyName);
+        } else {
+            propertyRequired = false;
+        }
+        return propertyRequired;
+    }
+
+    private boolean inFieldResolutionContext() {
+        return !resolvingPropertiesStack.isEmpty();
     }
 
     private DataModel resolveMayBe$ref(Schema<?> schema) {

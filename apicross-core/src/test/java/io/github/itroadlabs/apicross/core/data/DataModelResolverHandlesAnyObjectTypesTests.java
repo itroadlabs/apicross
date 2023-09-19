@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DataModelResolverHandlesAnyObjectTypesTests extends DataModelSchemaResolverTestsBase {
+public class DataModelResolverHandlesAnyObjectTypesTests extends DataModelResolverTestsBase {
     @BeforeEach
     public void setup() throws IOException {
         init("DataModelResolverHandlesAnyObjectTypesTests.yaml");
