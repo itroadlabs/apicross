@@ -4,6 +4,7 @@ import apicross.demoapp.storefront.app.VotesService;
 import apicross.demoapp.storefront.app.dto.VtCompetitionResultsResponseRepresentationModel;
 import apicross.demoapp.storefront.app.dto.VtVoteRequestRepresentationModel;
 import apicross.demoapp.storefront.app.dto.VtVotesResponseRepresentationModel;
+import apicross.demoapp.storefront.app.dto.VtWorkCommentsTreeResponseRepresentationModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,11 @@ public class VotesRequestsController implements VotesRequestsHandler {
     public ResponseEntity<?> vote(String workId, HttpHeaders headers, VtVoteRequestRepresentationModel requestEntity) {
         votesService.voteForWork(workId, requestEntity);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Override
+    public ResponseEntity<VtWorkCommentsTreeResponseRepresentationModel> getWorkComments(String workId, HttpHeaders headers) throws Exception {
+        throw new UnsupportedOperationException("not implemented yet");
     }
 
     @Override

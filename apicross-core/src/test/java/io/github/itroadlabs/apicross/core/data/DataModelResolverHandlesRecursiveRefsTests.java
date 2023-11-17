@@ -11,8 +11,9 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DataModelResolverHandlesReflectiveRefsTests extends DataModelResolverTestsBase {
+public class DataModelResolverHandlesRecursiveRefsTests extends DataModelResolverTestsBase {
     @BeforeEach
     void setup() throws IOException {
         init("DataModelResolverHandlesRecursiveRefsTests.yaml");
@@ -62,5 +63,19 @@ public class DataModelResolverHandlesReflectiveRefsTests extends DataModelResolv
         ObjectDataModelProperty bProperty = model6.getProperty("b");
         DataModel bPropertyType = bProperty.getType();
         assertSame(bPropertyType, model5);
+    }
+
+    @Test
+    void resolveRecursiveRefsInArrays() {
+        Schema<?> model7schema = openAPIComponentsIndex.schemaByName("Model7");
+        ObjectDataModel model7 = (ObjectDataModel) resolver.resolve(model7schema);
+        ObjectDataModelProperty rootsProperty = model7.getProperty("roots");
+        assertTrue(rootsProperty.getType() instanceof ArrayDataModel);
+        ArrayDataModel arrayDataModel = (ArrayDataModel) rootsProperty.getType();
+        ObjectDataModel itemsDataModel = (ObjectDataModel) arrayDataModel.getItemsDataModel();
+        ObjectDataModelProperty children = itemsDataModel.getProperty("children");
+        ArrayDataModel childrenArrayType = (ArrayDataModel) children.getType();
+        DataModel childType = childrenArrayType.getItemsDataModel();
+        assertSame(childType, itemsDataModel);
     }
 }

@@ -19,9 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 public abstract class CodeGenerator<T extends CodeGeneratorOptions> {
@@ -78,20 +76,24 @@ public abstract class CodeGenerator<T extends CodeGeneratorOptions> {
 
     protected void preProcess(Iterable<ObjectDataModel> models, Iterable<RequestsHandler> handlers) {
         for (ObjectDataModel model : models) {
-            setupDataModelConstraintsCustomAttributes(model);
+            setupDataModelConstraintsCustomAttributes(model, new HashSet<>());
         }
     }
 
-    protected void setupDataModelConstraintsCustomAttributes(DataModel dataModel) {
+    protected void setupDataModelConstraintsCustomAttributes(DataModel dataModel, Set<DataModel> alreadyProcessed) {
         if (dataModel instanceof PrimitiveDataModel) {
             setupPrimitiveDataModelConstraintsCustomAttributes((PrimitiveDataModel) dataModel);
         } else if (dataModel instanceof ArrayDataModel) {
             setupArrayDataModelConstraintsCustomAttributes((ArrayDataModel) dataModel);
-            setupDataModelConstraintsCustomAttributes(((ArrayDataModel) dataModel).getItemsDataModel());
+            setupDataModelConstraintsCustomAttributes(((ArrayDataModel) dataModel).getItemsDataModel(), alreadyProcessed);
         } else if (dataModel instanceof ObjectDataModel) {
+            if (alreadyProcessed.contains(dataModel)) {
+                return;
+            }
+            alreadyProcessed.add(dataModel);
             for (ObjectDataModelProperty property : ((ObjectDataModel) dataModel).getProperties()) {
                 DataModel propertyDataModel = property.getType();
-                setupDataModelConstraintsCustomAttributes(propertyDataModel);
+                setupDataModelConstraintsCustomAttributes(propertyDataModel, alreadyProcessed);
             }
         }
     }

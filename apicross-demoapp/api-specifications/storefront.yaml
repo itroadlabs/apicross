@@ -154,6 +154,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/VtVotesResponse'
 
+  '/sf/works/{workId}/comments':
+    get:
+      summary: Послучение дерева комментариев к конкурсной работе
+      operationId: getWorkComments
+      tags:
+        - Votes
+      parameters:
+        - $ref: 'common-models.yaml#/components/parameters/WorkIdPathParameter'
+      responses:
+        '200':
+          description: Дерево комментариев в теле ответа
+          content:
+            'application/vnd.demoapp.v1+json':
+              schema:
+                $ref: '#/components/schemas/VtWorkCommentsTreeResponse'
+
   '/sf/competitions/{competitionId}/results':
     get:
       summary: Получение результатов конкурса
@@ -377,6 +393,25 @@ components:
         votesSummary:
           $ref: '#/components/schemas/VotesSummary'
 
+    VtWorkCommentsTreeResponse:
+      type: object
+      properties:
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/VtWorkCommentsTreeNode'
+
+    VtWorkCommentsTreeNode:
+      type: object
+      properties:
+        text:
+          type: string
+        author:
+          type: string
+        nested:
+          type: array
+          items:
+            $ref: '#/components/schemas/VtWorkCommentsTreeNode'
 
     AbstractVotesSummary:
       type: object

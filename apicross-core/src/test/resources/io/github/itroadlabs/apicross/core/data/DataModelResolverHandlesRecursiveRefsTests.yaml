@@ -49,3 +49,21 @@ components:
       properties:
         b:
           $ref: '#/components/schemas/Model5'
+
+    Model7:
+      title: CampaignElementsTree
+      type: object
+      properties:
+        roots:
+          type: array
+          items:
+            $ref: '#/components/schemas/Model8'
+
+    Model8:
+      title: CampaignElementTreeNode
+      type: object
+      properties:
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Model8'

@@ -167,7 +167,7 @@ public class SpringMvcCodeGenerator extends JavaCodeGenerator<SpringMvcCodeGener
                     Collection<RequestQueryParameter> queryParameters = method.getQueryParameters();
                     for (RequestQueryParameter queryParameter : queryParameters) {
                         DataModel queryParameterType = queryParameter.getType();
-                        setupDataModelConstraintsCustomAttributes(queryParameterType);
+                        setupDataModelConstraintsCustomAttributes(queryParameterType, new HashSet<>());
                     }
                     File sourceFile = new File(modelsPackageDir, StringUtils.capitalize(operationId) + "Query.java");
                     try (FileOutputStream out = new FileOutputStream(sourceFile)) {
