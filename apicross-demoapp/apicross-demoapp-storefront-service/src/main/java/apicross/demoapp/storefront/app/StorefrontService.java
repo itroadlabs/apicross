@@ -9,7 +9,7 @@ import apicross.demoapp.storefront.domain.Competition;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Collections;
 
 @Service

@@ -12,6 +12,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.time.LocalDate;
@@ -52,6 +53,7 @@ public class MySpaceMicroserviceTests {
                 .andExpect(status().is(401));
     }
 
+    // TODO Этот падает с ошибкой из-за того, что почему-то валидация не происходит
     @Test
     public void creating_competition_invalid_request_body() throws Exception {
         RequestPostProcessor auth = httpBasic("user1", "user1Pass");

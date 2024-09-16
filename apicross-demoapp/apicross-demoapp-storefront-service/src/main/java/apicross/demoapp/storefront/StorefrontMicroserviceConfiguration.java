@@ -5,8 +5,8 @@ import org.hibernate.validator.resourceloading.AggregateResourceBundleLocator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import java.util.Collections;
 
 @Configuration
