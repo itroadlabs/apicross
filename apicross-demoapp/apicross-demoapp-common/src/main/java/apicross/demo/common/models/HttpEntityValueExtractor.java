@@ -2,8 +2,8 @@ package apicross.demo.common.models;
 
 import org.springframework.http.HttpEntity;
 
-import javax.validation.valueextraction.ExtractedValue;
-import javax.validation.valueextraction.ValueExtractor;
+import jakarta.validation.valueextraction.ExtractedValue;
+import jakarta.validation.valueextraction.ValueExtractor;
 
 public class HttpEntityValueExtractor implements ValueExtractor<HttpEntity<@ExtractedValue ?>> {
     @Override

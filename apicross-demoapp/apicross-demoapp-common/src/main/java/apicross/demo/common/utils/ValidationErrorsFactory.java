@@ -5,10 +5,10 @@ import io.github.itroadlabs.apicross.beanvalidation.MinProperties;
 import io.github.itroadlabs.apicross.beanvalidation.RequiredProperties;
 import apicross.demo.common.models.QueryObjectMarker;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.ElementKind;
-import javax.validation.Path;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ElementKind;
+import jakarta.validation.Path;
 import java.lang.annotation.Annotation;
 import java.util.*;
 
