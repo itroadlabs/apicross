@@ -3,9 +3,9 @@ package apicross.demo.common.models;
 import apicross.demo.common.utils.HasETag;
 import org.apache.commons.codec.digest.DigestUtils;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 import java.util.Objects;
 
 @MappedSuperclass

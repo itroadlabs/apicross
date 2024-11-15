@@ -5,6 +5,7 @@ import apicross.demo.myspace.app.ManageWorksService;
 import apicross.demo.myspace.domain.Work;
 import apicross.demo.myspace.domain.WorkFileReference;
 import apicross.demo.myspace.ports.adapters.web.models.*;
+import jakarta.activation.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 
-import javax.activation.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -45,8 +45,6 @@ public class WorksRequestsController implements WorksRequestsHandler {
     @Override
     public ResponseEntity<?> placeWorkConsumeVndDemoappV1Json(String competitionId, HttpHeaders headers, Authentication authentication, RpmWpPlaceWorkRequest requestBody) {
         final EntityWithETag<Work> placeWorkResult = manageWorksService.placeWork(competitionId, (User) authentication.getPrincipal(), requestBody);
-        UriComponents location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(placeWorkResult.getEntity().getId());
         return ResponseEntity.created(URI.create("/my/works/" + placeWorkResult.getEntity().getId()))
                 .eTag(placeWorkResult.etag())
                 .build();

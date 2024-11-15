@@ -12,7 +12,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClientBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.util.TestSocketUtils;
 
 @EnableFeignClients
 @SpringBootConfiguration
@@ -27,7 +27,7 @@ public class TestGeneratedCodeConfiguration {
 
     @Bean
     WireMockConfiguration wireMockConfiguration() {
-        return new WireMockConfiguration().port(SocketUtils.findAvailableTcpPort()).notifier(new Slf4jNotifier(false));
+        return new WireMockConfiguration().port(TestSocketUtils.findAvailableTcpPort()).notifier(new Slf4jNotifier(false));
     }
 
     @Bean(destroyMethod = "stop")

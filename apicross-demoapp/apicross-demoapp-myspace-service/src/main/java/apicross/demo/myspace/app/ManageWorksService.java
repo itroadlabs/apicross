@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -89,12 +89,12 @@ public class ManageWorksService {
         filesStore.delete(fileId);
     }
 
-    public javax.activation.DataSource loadFileContent(Authentication authentication, @NonNull String fileId) throws IOException {
+    public jakarta.activation.DataSource loadFileContent(Authentication authentication, @NonNull String fileId) throws IOException {
         WorkFileReference workFileReference = workFileReferenceRepository.findById(((User) authentication.getPrincipal()).getUsername(), fileId);
         return new InputStreamDataSource(filesStore.fileContent(fileId), workFileReference.getMediaType());
     }
 
-    private static class InputStreamDataSource implements javax.activation.DataSource {
+    private static class InputStreamDataSource implements jakarta.activation.DataSource {
         private final InputStream inputStream;
         private final String contentType;
 

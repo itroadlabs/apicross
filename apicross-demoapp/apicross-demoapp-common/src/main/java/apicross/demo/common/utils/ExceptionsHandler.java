@@ -10,8 +10,10 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolationException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
 import java.util.Map;
 
 @Slf4j
@@ -19,6 +21,11 @@ public class ExceptionsHandler {
 
     public static final String APPLICATION_PROBLEM_JSON_CHARSET_UTF_8 = "application/problem+json; charset=utf-8";
     private final ValidationErrorsFactory validationErrorsFactory = new ValidationErrorsFactory();
+
+    @ExceptionHandler({NoResourceFoundException.class})
+    public ResponseEntity<ProblemDescription> handle(NoResourceFoundException e, HttpServletRequest request) {
+        return resourceNotFoundResponse(request, "Resource not found");
+    }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ProblemDescription> handle(NoHandlerFoundException e, HttpServletRequest request) {

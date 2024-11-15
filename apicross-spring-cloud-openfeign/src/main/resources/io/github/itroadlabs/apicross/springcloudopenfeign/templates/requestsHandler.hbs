@@ -1,6 +1,6 @@
 package {{package}};
 
-import javax.servlet.http.*;
+import jakarta.servlet.http.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
@@ -9,7 +9,7 @@ import java.util.*;
 {{/each}}
 
 {{> documentation }}
-@javax.annotation.Generated(value = "{{generatorOpts.generatorClassName}}", date = "{{generatorOpts.generationDate}}")
+@jakarta.annotation.Generated(value = "{{generatorOpts.generatorClassName}}", date = "{{generatorOpts.generationDate}}")
 public interface {{typeName}}Client {
 {{#each methods}}
     {{> requestsHandlerMethod}}

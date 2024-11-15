@@ -10,6 +10,8 @@ import apicross.demo.myspace.domain.Competition;
 import apicross.demo.myspace.domain.CompetitionParticipantRequirements;
 import apicross.demo.myspace.domain.CompetitionRepository;
 import apicross.demo.myspace.domain.CompetitionVotingType;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -17,8 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Validated({ValidationStages.class})

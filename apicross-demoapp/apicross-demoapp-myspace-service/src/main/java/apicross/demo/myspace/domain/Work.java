@@ -5,7 +5,7 @@ import apicross.demo.common.utils.IdGenerator;
 import lombok.NonNull;
 import org.springframework.security.core.userdetails.User;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.*;
 

@@ -3,7 +3,6 @@ package io.github.itroadlabs.apicross.beanvalidation.springmvc.params;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.web.servlet.mvc.method.annotation.ExtendedServletRequestDataBinder;
 
-import javax.servlet.ServletRequest;
 import java.util.Map;
 
 public class ParamNameDataBinder extends ExtendedServletRequestDataBinder {
@@ -15,13 +14,13 @@ public class ParamNameDataBinder extends ExtendedServletRequestDataBinder {
     }
 
     @Override
-    protected void addBindValues(MutablePropertyValues valuesFromRequest, ServletRequest request) {
-        super.addBindValues(valuesFromRequest, request);
+    protected void addBindValues(MutablePropertyValues mpvs, jakarta.servlet.ServletRequest request) {
+        super.addBindValues(mpvs, request);
         for (Map.Entry<String, String> entry : renameMapping.entrySet()) {
             String parameterName = entry.getKey();
             String propertyName = entry.getValue();
-            if (valuesFromRequest.contains(parameterName)) {
-                valuesFromRequest.add(propertyName, valuesFromRequest.getPropertyValue(parameterName).getValue());
+            if (mpvs.contains(parameterName)) {
+                mpvs.add(propertyName, mpvs.getPropertyValue(parameterName).getValue());
             }
         }
     }

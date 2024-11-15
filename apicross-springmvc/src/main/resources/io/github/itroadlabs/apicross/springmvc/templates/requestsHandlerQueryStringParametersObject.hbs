@@ -2,8 +2,8 @@ package {{package}};
 {{#each imports}}
     import {{this}};
 {{/each}}
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 import java.util.*;
 import javax.annotation.*;
 {{#if anyOptionalQueryParameter}}
@@ -24,7 +24,7 @@ import javax.annotation.*;
         }, groups = {BeanPropertiesValidationGroup.class})
     {{/if}}
 {{/if}}
-@javax.annotation.Generated(value = "{{generatorOpts.generatorClassName}}", date = "{{generatorOpts.generationDate}}")
+@jakarta.annotation.Generated(value = "{{generatorOpts.generatorClassName}}", date = "{{generatorOpts.generationDate}}")
 public class {{capitalizeFirst operationId}}Query
 {{#if generatorOpts.enableApicrossJavaBeanValidationSupport}}implements HasSpecifiedProperties{{/if}}
 {{#if queryObjectTypeInterfaces}}
